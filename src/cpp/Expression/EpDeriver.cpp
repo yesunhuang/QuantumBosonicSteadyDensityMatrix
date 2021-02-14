@@ -54,16 +54,16 @@ public:
                         std::vector<int> index){
         ayaji::Complex result=ayaji::Complex();
         // 遍历表达式
-        for(std::vector<Term>::iterator 
+        for (std::vector<Term>::iterator 
                 term=expression.begin();
-                term!=expression.end();term++){
+                term!=expression.end();term++) {
             ayaji::Complex termVal=ayaji::Complex();
             termVal+=((*term).coef*(*term).coefFactor);
             double realTermVal=1;
             // 遍历当前项中的不同因子
-            for(std::vector<Factor>::iterator 
+            for (std::vector<Factor>::iterator 
                     factor=(*term).factors.begin();
-                    factor!=(*term).factors.end();factor++){
+                    factor!=(*term).factors.end();factor++) {
                 // 获取对应的行列索引
                 int row=index[2*((*factor).mode-1)];
                 int col=index[2*(*factor).mode-1];

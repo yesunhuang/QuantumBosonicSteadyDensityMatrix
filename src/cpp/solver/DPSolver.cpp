@@ -56,6 +56,7 @@ private:
         auto neighbourIndex = mapper(indexArray);
         for(int i = 0; i < neighborSize; ++i){
             sum += function[i + 1](neighbourIndex[i]) * mapSrc.get(neighbourIndex[i]);
+            // sum +=EpDeriver.calEp(neighbourExpression[i],*indexArray)* mapSrc.get(neighbourIndex[i]);
         }
         return sum;
      }
