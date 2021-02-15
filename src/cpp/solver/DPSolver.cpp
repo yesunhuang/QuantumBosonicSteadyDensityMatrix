@@ -3,9 +3,10 @@
 //
 
 #include <iostream>
+#include <functional>
 // TODO: 更改为<omp.h> 此处为macOS适配，先写成这样
 // TODO: 提取头文件
-#include "/usr/local/opt/libomp/include/omp.h"
+#include <omp.h>
 #include <MatrixMapper.h>
 
 class DPSolver{
