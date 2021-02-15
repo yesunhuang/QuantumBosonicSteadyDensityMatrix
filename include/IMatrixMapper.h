@@ -6,7 +6,7 @@
 #define MATRIX_MAPPER_H
 
 #include <vector>
-#include <complex>
+#include "complex.h"
 
 class IMatrixMapper{
 public:
@@ -24,7 +24,7 @@ public:
      * 若存在变换此方法应自动返回变换后的位置所代表的值
      * 若任意坐标出现越界此方法应返回 0
      **/
-    virtual std::complex<double> get(std::vector<int> list) = 0;
+    virtual ayaji::Complex get(std::vector<int> list) = 0;
 
 
     /**
@@ -32,7 +32,7 @@ public:
      * @param list 坐标列表
      * @param value 将要设定的值
      */
-    virtual void set(std::vector<int> list, std::complex<double> value) = 0;
+    virtual void set(std::vector<int> list, ayaji::Complex value) = 0;
 
 
     /**

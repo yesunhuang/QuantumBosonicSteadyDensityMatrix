@@ -8,11 +8,11 @@
 
 class MatrixMapper: public IMatrixMapper{
 public:
-    std::complex<double> get(std::vector<int> list) override{
-        return 0;
+    ayaji::Complex get(std::vector<int> list) override{
+        return ayaji::Complex();
     }
 
-    void set(std::vector<int> list, std::complex<double> value) override{
+    void set(std::vector<int> list, ayaji::Complex value) override{
         ;
     }
 

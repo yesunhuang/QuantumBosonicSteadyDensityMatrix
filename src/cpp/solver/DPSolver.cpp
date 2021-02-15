@@ -7,6 +7,7 @@
 // TODO: 更改为<omp.h> 此处为macOS适配，先写成这样
 // TODO: 提取头文件
 #include <omp.h>
+#include "complex.h"
 #include <MatrixMapper.h>
 
 class DPSolver{
@@ -14,10 +15,10 @@ private:
     /**
      * 超参数
      */
-    double alpha;
-    double minusAlpha;  // 1 - alpha
+    ayaji::Complex alpha;
+    ayaji::Complex minusAlpha;  // 1 - alpha
     double epsilon;
-    double maxRecurveTimes;
+    int maxRecurveTimes;
 
     std::vector<int> matrixSizeArray;
 
@@ -51,8 +52,8 @@ private:
     /**
      * 计算 sigma_{i\in neighbour}P(l_0^i,\cdots,k_{M-1}^i} \rho'_{l...}
      */
-     inline std::complex<double> leftSum(const std::vector<int> &indexArray){
-        std::complex<double> sum = 0;
+     inline ayaji::Complex leftSum(const std::vector<int> &indexArray){
+        ayaji::Complex sum;
         auto neighbourIndex = mapper(indexArray);
         for(int i = 0; i < neighborSize; ++i){
             sum += function[i + 1](neighbourIndex[i]) * mapSrc.get(neighbourIndex[i]);
@@ -62,14 +63,14 @@ private:
 
     void doRun(int depth, const std::vector<int> &index){
         if(depth == matrixSizeArray.size()){
-            std::complex<double> s1 = leftSum(index);
-            std::complex<double> P0 = function[0](index);
-            std::complex<double> self = mapSrc.get(index);
-            std::complex<double> newValue = alpha / P0 * s1 + minusAlpha * self;
+            ayaji::Complex s1 = leftSum(index);
+            ayaji::Complex P0 = ayaji::Complex(function[0](index), 0);
+            ayaji::Complex self = mapSrc.get(index);
+            ayaji::Complex newValue = alpha / P0 * s1 + minusAlpha * self;
             if(fit) {
                 // 判断该单位是否满足收敛需求
-                std::complex<double> modValue = P0 * self - s1;
-                double testValue = hypot(modValue.imag(), modValue.real()) / std::max((P0 * self).real(), epsilon);
+                ayaji::Complex modValue = P0 * self - s1;
+                double testValue = hypot(modValue.getImage(), modValue.getReal()) / std::max((P0 * self).getReal(), epsilon);
                 if (testValue > epsilon) {
                     fit = false;
                 }
