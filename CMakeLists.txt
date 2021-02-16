@@ -2,6 +2,8 @@ project(Quantum)
 cmake_minimum_required( VERSION 3.0 )
 
 include_directories( include )
+include_directories( include/solver )
+include_directories( include/expression )
 find_package( OpenMP REQUIRED )
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
