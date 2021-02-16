@@ -38,12 +38,9 @@ class EpDeriver{
 private:
     std::vector<RawTerm> H;
     std::vector<RawTerm> co_ps;
-    std::vector<Term> masterEps;
-    std::vector<std::vector<int>> neignborIndexs;
-    std::vector<std::vector<Term>> neighborEps;
     std::vector<int> rawIndex;
 
-    void buildHEps(){
+    void buildHEps() {
         //处理哈密顿量
         for (std::vector<RawTerm>::iterator
                 rawTerm=(*this).H.begin();
@@ -55,10 +52,10 @@ private:
             std::vector<Factor> neignborTermR=std::vector<Factor>();
             for (std::vector<int>::iterator
                     ops=(*rawTerm).termOp.begin();
-                    ops!=(*rawTerm).termOp.end();ops++){
+                    ops!=(*rawTerm).termOp.end();ops++) {
                 int mode=(*ops-1)/2+1;
                 bool creat=((*ops)%2!=0);
-                if (neignborTermL.size()==0||mode!=(*neignborTermL.end()).mode){
+                if (neignborTermL.size()==0||mode!=(*neignborTermL.end()).mode) {
                     Factor factor={mode,0,0};
                     neignborTermL.push_back(factor);
                     neignborTermR.push_back(factor);
@@ -79,6 +76,8 @@ private:
             Term termL={(*rawTerm).coef,ayaji::Complex(0,1),neignborTermL};
             Term termR={(*rawTerm).coef,ayaji::Complex(0,-1),neignborTermR};
             if (isSame(rawIndex,neighborIndexL)) {
+                termL.coefFactor*=ayaji::Complex(-1,0);
+                termR.coefFactor*=ayaji::Complex(-1,0);
                 masterEps.push_back(termL);
                 masterEps.push_back(termR);
                 continue;
@@ -107,8 +106,55 @@ private:
         }
     }
 
-    void buildCollapseEps(){
-        //TODO
+    void buildCollapseEps() {
+        //处理坍塌算符
+        for (std::vector<RawTerm>::iterator
+                rawTerm=(*this).co_ps.begin();
+                rawTerm!=(*this).co_ps.end();rawTerm++) {
+            // 一次整体处理一项
+            if ((*rawTerm).termOp.size()!=1)
+                throw "Do not support this kind of Collapse Operator yet";
+            int mode=((*rawTerm).termOp[0]-1)/2+1;
+            bool creat=((*rawTerm).termOp[0]%2!=0);
+            std::vector<int> neighborIndex=rawIndex;
+            std::vector<Factor> neighborTerm=std::vector<Factor>();
+            Term termM;
+            if (creat) {
+                neighborIndex[2*(mode-1)]-=1;
+                neighborIndex[2*mode-1]-=1;
+                termM={(*rawTerm).coef,ayaji::Complex(1,0),neighborTerm};
+                std::vector<Factor> TermLR=std::vector<Factor>();
+                Term termLR={(*rawTerm).coef,ayaji::Complex(1,0),TermLR};
+                masterEps.push_back(termLR);
+            }
+            else {
+                neighborIndex[2*(mode-1)]+=1;
+                neighborIndex[2*mode-1]+=1;
+                Factor factorM={mode,1,1};
+                neighborTerm.push_back(factorM);
+                termM={(*rawTerm).coef,ayaji::Complex(1,0),neighborTerm};
+                Factor factorL={mode,1,0};
+                Factor factorR={mode,0,1};
+                std::vector<Factor> TermL=std::vector<Factor>();
+                std::vector<Factor> TermR=std::vector<Factor>();
+                TermL.push_back(factorL);
+                TermR.push_back(factorR);
+                Term termL={(*rawTerm).coef,ayaji::Complex(0.5,0),TermL};
+                Term termR={(*rawTerm).coef,ayaji::Complex(0.5,0),TermR};
+                masterEps.push_back(termL);
+                masterEps.push_back(termR);
+            }
+            int pos=findInside(neignborIndexs,neighborIndex);
+            if (pos==-1)
+            {
+                std::vector<Term> newExpression=std::vector<Term>();
+                newExpression.push_back(termM);
+                neignborIndexs.push_back(neighborIndex);
+                neighborEps.push_back(newExpression);
+            }
+            else
+                neighborEps[pos].push_back(termM);
+        }
     }
 
     bool isSame(std::vector<int> a,std::vector<int> b) {
@@ -120,13 +166,19 @@ private:
     }
 
     int findInside(std::vector<std::vector<int>> array,std::vector<int> target) {
-        for (int i=0;i<array.size();i++){
-            if(isSame(array[i],target))
+        for (int i=0;i<array.size();i++) {
+            if (isSame(array[i],target))
                 return i;
         }
         return -1;
     }
 public:
+    // 乘在当前元上的表达式
+    std::vector<Term> masterEps;
+    // 邻居相对,size()为邻居个数
+    std::vector<std::vector<int>> neignborIndexs;
+    // 乘在邻居上的表达式，和坐标一一对应
+    std::vector<std::vector<Term>> neighborEps;
     /**
      * @name: EpDeriver(std::vector<RawTerm> hamiltonian,
               std::vector<RawTerm> collapse,
@@ -187,4 +239,5 @@ public:
         }               
         return result;
     }
+
 };
