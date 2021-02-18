@@ -87,8 +87,8 @@ public:
 #ifdef DEBUG
         assert(mapper.size() == function.size() - 1 && "Number of mappers doesn't fit number of functions");
 #endif
-        mapSrc = new MatrixMapper();
-        mapDst = new MatrixMapper();
+        mapSrc = new MatrixMapper(matrixSize);
+        mapDst = new MatrixMapper(matrixSize);
 
     }
 

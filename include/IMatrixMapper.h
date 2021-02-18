@@ -35,12 +35,6 @@ public:
     virtual void set(std::vector<int> list, ayaji::Complex value) = 0;
 
 
-    /**
-     * 将当前函数内存储的数据复制到目标中（用于多线程处理）
-     * @param matrix 目标矩阵
-     */
-    virtual void copy(IMatrixMapper& matrix) = 0;
-
 protected:
     /**
      * PlaceHolder
