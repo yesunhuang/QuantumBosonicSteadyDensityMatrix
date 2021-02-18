@@ -1,11 +1,6 @@
-//
-// Created by 顾超 on 2021/2/16.
-//
-
-#ifndef QUANTUM_EPDERIVER_H
-#define QUANTUM_EPDERIVER_H
-
+/* Copyright 2021 YesunHuang */
 #include <iostream>
+#include <functional>
 #include "MatrixMapper.h"
 #include "./complex.h"
 
@@ -24,7 +19,7 @@ struct Factor{
  * @fuction: 预处理后的项，一项由多个Factors组成
  */
 struct Term{
-    ayaji::Complex coef;
+    ayaji::Complex *coef;
     // 因为前一个只有引用，所以单独开了一个空间存乘在系数上的因子(比如-1)
     ayaji::Complex coefFactor;
     std::vector<Factor> factors;
@@ -41,8 +36,55 @@ struct RawTerm{
 
 class EpDeriver{
 private:
-    std::vector<Term> expression;
+    std::vector<RawTerm> H;
+    std::vector<RawTerm> co_ps;
+    std::vector<int> rawIndex;
 
+    void buildHEps();
+
+    void buildCollapseEps();
+
+    bool isSame(const std::vector<int>& a,const std::vector<int>& b) {
+        if (a.size()!=b.size()) return false;
+        for (int i=0;i<a.size();i++)
+            if (a[i]!=b[i])
+                return false;
+        return true;
+    }
+
+    int findInside(const std::vector<std::vector<int>> &array, const std::vector<int> &target) {
+        for (int i=0;i<array.size();i++) {
+            if (isSame(array[i],target))
+                return i;
+        }
+        return -1;
+    }
+public:
+    // 乘在当前元上的表达式
+    std::vector<Term> masterEps;
+    // 邻居相对,size()为邻居个数
+    std::vector<std::vector<int>> neignborIndexs;
+    // 乘在邻居上的表达式，和坐标一一对应
+    std::vector<std::vector<Term>> neighborEps;
+    /**
+     * @name: EpDeriver(std::vector<RawTerm> hamiltonian,
+              std::vector<RawTerm> collapse,
+              std::vector<int> index)
+     * @fuction: 预处理
+     * @param {*hamiltonian} 哈密顿量
+     * @param {*collapse} 坍塌算符
+     * @param {*index} 全是零的索引
+     * @return {*EpDriver}
+     */
+    EpDeriver(const std::vector<RawTerm>& hamiltonian,
+              const std::vector<RawTerm>& collapse,
+              const std::vector<int>& index):
+              H(hamiltonian),
+              co_ps(collapse),
+              rawIndex(index){
+        buildHEps();
+        buildCollapseEps();
+    }
     /**
      * @name: calEp(Expression expression,std::vector<int> index)
      * @fuction: 计算表达式值
@@ -56,19 +98,12 @@ private:
     */
     static ayaji::Complex calEp(std::vector<Term> expression,
                                 std::vector<int> index);
-public:
-    EpDeriver(){
-        //TODO
-    };
-
-
     /**
-     * @name: calEp(std::vector<int> index)
-     * @fuction: 计算表达式值，供外部调用
-     * @param {*index}:元素索引
-     * @return {*int}:值
+     * @name: updateCoef
+     * @fuction: 更新系数,不用再预处理一次
+     * @param {*hamiltonian} 哈密顿量
+     * @return {*collapse} 坍塌算符
      */
-    ayaji::Complex calEp(std::vector<int> index);
+    void updateCoef(std::vector<RawTerm> hamiltonian,
+                    std::vector<RawTerm> collapse);
 };
-
-#endif //QUANTUM_EPDERIVER_H
