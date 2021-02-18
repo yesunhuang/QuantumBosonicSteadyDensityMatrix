@@ -12,6 +12,7 @@
 #include <iostream>
 #include <omp.h>
 #include "complex.h"
+#include "EpDeriver.h"
 #include <MatrixMapper.h>
 
 class DPSolver {
@@ -19,13 +20,14 @@ private:
     /**
      * 超参数
      */
-    ayaji::Complex alpha;
-    ayaji::Complex minusAlpha;  // 1 - alpha
-    double epsilon;
-    int maxRecurveTimes;
+    const ayaji::Complex alpha;
+    const ayaji::Complex minusAlpha;  // 1 - alpha
+    const double epsilon;
+    const int maxRecurveTimes;
 
-    std::vector<int> matrixSizeArray;
+    const std::vector<int> matrixSizeArray;
 
+    EpDeriver epd;
     /**
      * 结果是否收敛
      */
@@ -35,12 +37,6 @@ private:
      * 邻居数量 由预处理给出
      */
     size_t neighborSize;
-
-    /**
-     * 函数P 由预处理给出
-     * P[0] 为分母上的值， 其余对应各个邻居
-     */
-    std::vector<std::function<double(std::vector<int>)>> function;
 
     /**
      * 邻居列表
@@ -77,9 +73,9 @@ private:
 
 public:
 
-    DPSolver(std::vector<int> matrixSize, std::vector<std::vector<int>> mapper,
-             std::vector<std::function<double(std::vector<int>)>> function, double alpha, double epsilon,
-             size_t maxRetTime) : matrixSizeArray(matrixSize), mapper(mapper), function(function),
+    DPSolver(std::vector<int> matrixSize,
+             EpDeriver epDeriver, double alpha, double epsilon,
+             size_t maxRetTime) : matrixSizeArray(matrixSize), mapper(epDeriver.neighbourIndexes), epd(epDeriver),
                                   alpha(ayaji::Complex(alpha, 0)),
                                   minusAlpha(ayaji::Complex(1 - alpha, 0)),
                                   epsilon(epsilon),

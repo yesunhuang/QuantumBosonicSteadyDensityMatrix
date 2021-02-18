@@ -63,7 +63,7 @@ public:
     // 乘在当前元上的表达式
     std::vector<Term> masterEps;
     // 邻居相对,size()为邻居个数
-    std::vector<std::vector<int>> neignborIndexs;
+    std::vector<std::vector<int>> neighbourIndexes;
     // 乘在邻居上的表达式，和坐标一一对应
     std::vector<std::vector<Term>> neighborEps;
     /**
@@ -96,8 +96,20 @@ public:
     这个东西在使用时要特别注意，无论你是不是在求邻居的系数，你输入给它的index是当前
     矩阵元的index，即别把邻居的index传给它！！！
     */
-    static ayaji::Complex calEp(std::vector<Term> expression,
-                                std::vector<int> index);
+    static ayaji::Complex calEp(const std::vector<Term>& expression,
+                                const std::vector<int>& index);
+    
+    ayaji::Complex calNeighbourEP(const std::vector<int>& root, int index){
+#ifdef DEBUG
+        assert(index >= neighbourIndexes.size() && "Neighbour index out of range");
+#endif
+        return calEp(neighborEps[index], root);
+    }
+
+    ayaji::Complex calMasterEP(const std::vector<int>& root){
+        return calEp(masterEps, root);
+    }
+
     /**
      * @name: updateCoef
      * @fuction: 更新系数,不用再预处理一次

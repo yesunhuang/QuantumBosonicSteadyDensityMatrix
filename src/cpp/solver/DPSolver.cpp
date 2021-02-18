@@ -28,8 +28,7 @@ inline ayaji::Complex DPSolver::leftSum(const std::vector<int> &indexArray){
     ayaji::Complex sum;
     auto neighbourIndex = getNeighbours(indexArray);
     for(int i = 0; i < neighborSize; ++i){
-        sum += ayaji::Complex(function[i + 1](neighbourIndex[i]), 0) * mapSrc->get(neighbourIndex[i]);
-        // sum +=EpDeriver.calEp(neighbourExpression[i],*indexArray)* mapSrc.get(neighbourIndex[i]);
+        sum += epd.calNeighbourEP(indexArray, i) * mapSrc->get(neighbourIndex[i]);
     }
     return sum;
 }
@@ -38,7 +37,7 @@ inline ayaji::Complex DPSolver::leftSum(const std::vector<int> &indexArray){
 void DPSolver::doRun(int depth, const std::vector<int> &index){
     if(depth == matrixSizeArray.size()){
         ayaji::Complex s1 = leftSum(index);
-        ayaji::Complex P0 = ayaji::Complex(function[0](index), 0);
+        ayaji::Complex P0 = epd.calMasterEP(index);
         ayaji::Complex self = mapSrc->get(index);
         ayaji::Complex newValue = alpha / P0 * s1 + minusAlpha * self;
         if(fit) {
