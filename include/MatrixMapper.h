@@ -38,6 +38,7 @@ private:
     ayaji::Complex *data;
 
     void rho(TensorMatrix& _rho, int length, int * curIndex, int sum_x, int sum_y){
+        // 注意：此处不要多线程化，使用了大量非线程安全操作，多线程绝对会出bug
         if (length == size.size()){
             _rho.set(sum_x, sum_y, get(curIndex));
         } else{
@@ -50,6 +51,22 @@ private:
                 }
             }
         }
+    }
+
+    void pRho(MatrixMapper& map, const std::vector<int> &mode, int depth, int curSize, int targetSize, int* targetIndex, ayaji::Complex value){
+        /*
+        if(mode[depth] == 0){
+            // 不要的index
+            if(curSize == targetSize){
+                map.set(targetIndex, value);
+            } else{
+
+            }
+        }else{
+            // 要的index
+
+        }
+         */
     }
 
     inline ayaji::Complex get(const int * index){
@@ -79,6 +96,7 @@ public:
             off[i] = offset;
             offset *= this->size[i];
         }
+        length = offset;
         // 预处理偏移2，加速生成张量矩阵的速度
         offset = 1;
         for(int i = size.size() - 1; i >= 0; --i){
@@ -87,6 +105,22 @@ public:
         }
         this->length = length;
         this->data = new ayaji::Complex[length];
+        int i = 0;
+        ayaji::Complex init((double )1.0/length, 0);
+        // 据说这样会快
+        for(i = 0; i < length / 8; ++i){
+            data[i + 0] = init;
+            data[i + 1] = init;
+            data[i + 2] = init;
+            data[i + 3] = init;
+            data[i + 4] = init;
+            data[i + 5] = init;
+            data[i + 6] = init;
+            data[i + 7] = init;
+        }
+        for(i = i * 8; i < length; ++i){
+            data[i] = init;
+        }
     }
 
     ~MatrixMapper(){
@@ -134,6 +168,7 @@ public:
 
     // ===============  Output Function  ===================
 
+
     TensorMatrix rowRho(){
         int len = 1;
         for(int i = 0; i < size.size(); i += 2){
@@ -144,6 +179,10 @@ public:
         rho(ret, 0, l, 0, 0);
         free(l);
         return ret;
+    }
+
+    void partialRho(std::vector<int> traceMode){
+
     }
 };
 
