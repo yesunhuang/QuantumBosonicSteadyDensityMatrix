@@ -345,5 +345,5 @@ __pycache__/
 # !tools/packages.config
 
 out/
-
+cmake-build-debug/
 
