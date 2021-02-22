@@ -212,7 +212,7 @@ public:
     矩阵元的index，即别把邻居的index传给它！！！
     */
     static ayaji::Complex calEp(std::vector<Term> expression,
-                        std::vector<int> index){
+                        std::vector<int> index) {
         ayaji::Complex result=ayaji::Complex();
         // 遍历表达式
         for (std::vector<Term>::iterator 
