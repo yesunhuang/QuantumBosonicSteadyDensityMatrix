@@ -1,4 +1,8 @@
-/* Copyright 2021 YesunHuang */
+/* Copyright 2021 YesunHuang & guch8017*/
+
+#ifndef INCLUDE_EXPRESSION_EPDERIVER_H_
+#define INCLUDE_EXPRESSION_EPDERIVER_H_
+
 #include <iostream>
 #include <functional>
 #include "MatrixMapper.h"
@@ -81,7 +85,7 @@ public:
               const std::vector<int>& index):
               H(hamiltonian),
               co_ps(collapse),
-              rawIndex(index){
+              rawIndex(index) {
         buildHEps();
         buildCollapseEps();
     }
@@ -99,14 +103,14 @@ public:
     static ayaji::Complex calEp(const std::vector<Term>& expression,
                                 const std::vector<int>& index);
     
-    ayaji::Complex calNeighbourEP(const std::vector<int>& root, int index){
+    ayaji::Complex calNeighbourEP(const std::vector<int>& root, int index) {
 #ifdef DEBUG
         assert(index >= neighbourIndexes.size() && "Neighbour index out of range");
 #endif
         return calEp(neighborEps[index], root);
     }
 
-    ayaji::Complex calMasterEP(const std::vector<int>& root){
+    ayaji::Complex calMasterEP(const std::vector<int>& root) {
         return calEp(masterEps, root);
     }
 
@@ -119,3 +123,5 @@ public:
     void updateCoef(std::vector<RawTerm> hamiltonian,
                     std::vector<RawTerm> collapse);
 };
+
+#endif // INCLUDE_EXPRESSION_EPDERIVER_H_

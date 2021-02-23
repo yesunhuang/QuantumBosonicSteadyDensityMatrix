@@ -1,3 +1,4 @@
+/* Copyright 2021 YesunHuang & AyajiLin */
 /**
  * @ FileName: Complex.h
  * @ Function: declare the function of Complex
@@ -72,6 +73,6 @@ namespace ayaji {
 #endif // !HIGH_PRECISION
 	};
 
-}
+}// namespace ayaji
 
 #endif

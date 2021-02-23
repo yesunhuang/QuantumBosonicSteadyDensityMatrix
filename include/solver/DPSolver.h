@@ -1,9 +1,10 @@
+/* Copyright 2021 YesunHuang & guch8017 */
 //
 // Created by 顾超 on 2021/2/16.
 //
 
-#ifndef QUANTUM_DPSOLVER_H
-#define QUANTUM_DPSOLVER_H
+#ifndef INCLUDE_SOLVER_DPSOLVER_H_
+#define INCLUDE_SOLVER_DPSOLVER_H_
 
 //
 // Created by guch8017 on 2021/2/10.
@@ -12,7 +13,7 @@
 #include <iostream>
 #include <omp.h>
 #include "complex.h"
-#include "EpDeriver.h"
+#include "expression/EpDeriver.h"
 #include <MatrixMapper.h>
 
 class DPSolver {
@@ -79,7 +80,7 @@ public:
                                   alpha(ayaji::Complex(alpha, 0)),
                                   minusAlpha(ayaji::Complex(1 - alpha, 0)),
                                   epsilon(epsilon),
-                                  maxRecurveTimes(maxRetTime){
+                                  maxRecurveTimes(maxRetTime) {
 #ifdef DEBUG
         assert(mapper.size() == function.size() - 1 && "Number of mappers doesn't fit number of functions");
 #endif
@@ -102,4 +103,4 @@ public:
     MatrixMapper* getResult(){ return mapSrc; }
 };
 
-#endif //QUANTUM_DPSOLVER_H
+#endif // INCLUDE_SOLVER_DPSOLVER_H_
