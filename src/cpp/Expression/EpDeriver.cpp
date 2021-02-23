@@ -1,6 +1,6 @@
 /* Copyright 2021 YesunHuang */
 
-#include "EpDeriver.h"
+#include "Expression\EpDeriver.h"
 
 void EpDeriver::buildHEps() {
     //处理哈密顿量
@@ -42,23 +42,24 @@ void EpDeriver::buildHEps() {
             masterEps.push_back(termR);
             continue;
         }
-        int pos = findInside(neignborIndexs, neighborIndexL);
+        int pos = findInside(neighbourIndexes, neighborIndexL);
         if (pos == -1) {
             std::vector<Term> newExpression = std::vector<Term>();
             newExpression.push_back(termL);
-            neignborIndexs.push_back(neighborIndexL);
+            neighbourIndexes.push_back(neighborIndexL);
             neighborEps.push_back(newExpression);
-        } else
+        } else {
             neighborEps[pos].push_back(termL);
-
-        pos = findInside(neignborIndexs, neighborIndexR);
+        }
+        pos = findInside(neighbourIndexes, neighborIndexR);
         if (pos == -1) {
             std::vector<Term> newExpression = std::vector<Term>();
             newExpression.push_back(termR);
-            neignborIndexs.push_back(neighborIndexR);
+            neighbourIndexes.push_back(neighborIndexR);
             neighborEps.push_back(newExpression);
-        } else
+        } else {
             neighborEps[pos].push_back(termR);
+        }
     }
 }
 
@@ -99,14 +100,15 @@ void EpDeriver::buildCollapseEps() {
             masterEps.push_back(termL);
             masterEps.push_back(termR);
         }
-        int pos = findInside(neignborIndexs, neighborIndex);
+        int pos = findInside(neighbourIndexes, neighborIndex);
         if (pos == -1) {
             std::vector<Term> newExpression = std::vector<Term>();
             newExpression.push_back(termM);
-            neignborIndexs.push_back(neighborIndex);
+            neighbourIndexes.push_back(neighborIndex);
             neighborEps.push_back(newExpression);
-        } else
+        } else {
             neighborEps[pos].push_back(termM);
+        }
     }
 }
 
