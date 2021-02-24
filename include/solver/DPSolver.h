@@ -10,7 +10,12 @@
 //
 
 #include <iostream>
-#include <omp.h>
+#if __APPLE__
+    // For macOS's OpenMP Library
+    #include "/usr/local/include/omp.h"
+#else
+    #include <omp.h>
+#endif
 #include "complex.h"
 #include "EpDeriver.h"
 #include <MatrixMapper.h>

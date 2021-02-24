@@ -6,7 +6,7 @@
 #define QUANTUM_MATRIXMAPPER_H
 #include <iostream>
 #include <vector>
-
+#include "complex.h"
 
 struct TensorMatrix{
     size_t x;

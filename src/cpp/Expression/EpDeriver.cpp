@@ -42,20 +42,20 @@ void EpDeriver::buildHEps() {
             masterEps.push_back(termR);
             continue;
         }
-        int pos = findInside(neignborIndexs, neighborIndexL);
+        int pos = findInside(neighbourIndexes, neighborIndexL);
         if (pos == -1) {
             std::vector<Term> newExpression = std::vector<Term>();
             newExpression.push_back(termL);
-            neignborIndexs.push_back(neighborIndexL);
+            neighbourIndexes.push_back(neighborIndexL);
             neighborEps.push_back(newExpression);
         } else
             neighborEps[pos].push_back(termL);
 
-        pos = findInside(neignborIndexs, neighborIndexR);
+        pos = findInside(neighbourIndexes, neighborIndexR);
         if (pos == -1) {
             std::vector<Term> newExpression = std::vector<Term>();
             newExpression.push_back(termR);
-            neignborIndexs.push_back(neighborIndexR);
+            neighbourIndexes.push_back(neighborIndexR);
             neighborEps.push_back(newExpression);
         } else
             neighborEps[pos].push_back(termR);
@@ -99,30 +99,28 @@ void EpDeriver::buildCollapseEps() {
             masterEps.push_back(termL);
             masterEps.push_back(termR);
         }
-        int pos = findInside(neignborIndexs, neighborIndex);
+        int pos = findInside(neighbourIndexes, neighborIndex);
         if (pos == -1) {
             std::vector<Term> newExpression = std::vector<Term>();
             newExpression.push_back(termM);
-            neignborIndexs.push_back(neighborIndex);
+            neighbourIndexes.push_back(neighborIndex);
             neighborEps.push_back(newExpression);
         } else
             neighborEps[pos].push_back(termM);
     }
 }
 
-ayaji::Complex EpDeriver::calEp(std::vector<Term> expression,
-                                std::vector<int> index) {
+ayaji::Complex EpDeriver::calEp(const std::vector<Term>& expression,
+                     const std::vector<int>& index) {
     ayaji::Complex result = ayaji::Complex();
     // 遍历表达式
-    for (std::vector<Term>::iterator
-                 term = expression.begin();
+    for (auto term = expression.begin();
          term != expression.end(); term++) {
         ayaji::Complex termVal = ayaji::Complex();
         termVal += ((*(*term).coef) * (*term).coefFactor);
         double realTermVal = 1;
         // 遍历当前项中的不同因子
-        for (std::vector<Factor>::iterator
-                     factor = (*term).factors.begin();
+        for (auto factor = (*term).factors.begin();
              factor != (*term).factors.end(); factor++) {
             // 获取对应的行列索引
             int row = index[2 * ((*factor).mode - 1)];
