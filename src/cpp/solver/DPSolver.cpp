@@ -3,11 +3,12 @@
 // Created by guch8017 on 2021/2/10.
 //
 
-#include "solver\DPSolver.h"
+#include "solver/DPSolver.h"
 
-inline std::vector<std::vector<int>> DPSolver::getNeighbours(const std::vector<int>& root) {
+inline std::vector<std::vector<int>> DPSolver::getNeighbours(
+    const std::vector<int>& root) {
     std::vector<std::vector<int>> ret;
-    for (auto offset: mapper) {
+    for (auto offset : mapper) {
         auto index = root;
         for (int i = 0; i < root.size(); ++i) {
             index[i] += offset[i];
@@ -16,7 +17,8 @@ inline std::vector<std::vector<int>> DPSolver::getNeighbours(const std::vector<i
     return ret;
 }
 
-inline std::vector<int> DPSolver::getNeighbour(std::vector<int> root, int index) {
+inline std::vector<int> DPSolver::getNeighbour(std::vector<int> root,
+                                               int index) {
     auto offset = mapper[index];
     for (int i = 0; i < root.size(); ++i) {
         root[i] += offset[i];
@@ -24,18 +26,17 @@ inline std::vector<int> DPSolver::getNeighbour(std::vector<int> root, int index)
     return root;
 }
 
-
-inline ayaji::Complex DPSolver::leftSum(const std::vector<int> &indexArray) {
+inline ayaji::Complex DPSolver::leftSum(const std::vector<int>& indexArray) {
     ayaji::Complex sum;
     auto neighbourIndex = getNeighbours(indexArray);
     for (int i = 0; i < neighborSize; ++i) {
-        sum += epd.calNeighbourEP(indexArray, i) * mapSrc->get(neighbourIndex[i]);
+        sum +=
+            epd.calNeighbourEP(indexArray, i) * mapSrc->get(neighbourIndex[i]);
     }
     return sum;
 }
 
-
-void DPSolver::doRun(int depth, const std::vector<int> &index) {
+void DPSolver::doRun(int depth, const std::vector<int>& index) {
     if (depth == matrixSizeArray.size()) {
         ayaji::Complex s1 = leftSum(index);
         ayaji::Complex P0 = epd.calMasterEP(index);
@@ -44,7 +45,8 @@ void DPSolver::doRun(int depth, const std::vector<int> &index) {
         if (fit) {
             // 判断该单位是否满足收敛需求
             ayaji::Complex modValue = P0 * self - s1;
-            double testValue = hypot(modValue.getImage(), modValue.getReal()) / std::max((P0 * self).getReal(), epsilon);
+            double testValue = hypot(modValue.getImage(), modValue.getReal()) /
+                               std::max((P0 * self).getReal(), epsilon);
             if (testValue > epsilon) {
                 fit = false;
             }
