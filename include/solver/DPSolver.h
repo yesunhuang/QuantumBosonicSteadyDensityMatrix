@@ -2,12 +2,8 @@
 // Created by 顾超 on 2021/2/16.
 //
 
-#ifndef QUANTUM_DPSOLVER_H
-#define QUANTUM_DPSOLVER_H
-
-//
-// Created by guch8017 on 2021/2/10.
-//
+#ifndef INCLUDE_SOLVER_DPSOLVER_H_
+#define INCLUDE_SOLVER_DPSOLVER_H_
 
 #include <iostream>
 #if __APPLE__
@@ -16,9 +12,9 @@
 #else
     #include <omp.h>
 #endif
-#include "complex.h"
-#include "EpDeriver.h"
-#include <MatrixMapper.h>
+#include "./complex.h"
+#include "expression/EpDeriver.h"
+#include "./MatrixMapper.h"
 
 class DPSolver {
 private:
@@ -51,20 +47,21 @@ private:
      */
     std::vector<std::vector<int>> mapper;
 
-    MatrixMapper *mapSrc;
-    MatrixMapper *mapDst;
+    MatrixMapper* mapSrc;
+    MatrixMapper* mapDst;
 
     /**
      * 计算 sigma_{i\in neighbour}P(l_0^i,\cdots,k_{M-1}^i} \rho'_{l...}
      */
-    inline ayaji::Complex leftSum(const std::vector<int> &indexArray);
+    inline ayaji::Complex leftSum(const std::vector<int>& indexArray);
 
     /**
      * 给出原点坐标，根据偏移计算并返回所有邻居坐标
      * @param root 原点坐标
      * @return 所有邻居坐标
      */
-    inline std::vector<std::vector<int>> getNeighbours(const std::vector<int> &root);
+    inline std::vector<std::vector<int>> getNeighbours(
+        const std::vector<int>& root);
 
     /**
      * 给出原点坐标，返回第 index 个邻居坐标
@@ -74,23 +71,27 @@ private:
      */
     inline std::vector<int> getNeighbour(std::vector<int> root, int index);
 
-    void doRun(int depth, const std::vector<int> &index);
+    void doRun(int depth, const std::vector<int>& index);
 
 public:
-
     DPSolver(std::vector<int> matrixSize,
-             EpDeriver epDeriver, double alpha, double epsilon,
-             size_t maxRetTime) : matrixSizeArray(matrixSize), mapper(epDeriver.neighbourIndexes), epd(epDeriver),
-                                  alpha(ayaji::Complex(alpha, 0)),
-                                  minusAlpha(ayaji::Complex(1 - alpha, 0)),
-                                  epsilon(epsilon),
-                                  maxRecurveTimes(maxRetTime){
+             EpDeriver epDeriver,
+             double alpha,
+             double epsilon,
+             size_t maxRetTime)
+        : matrixSizeArray(matrixSize),
+          mapper(epDeriver.neighbourIndexes),
+          epd(epDeriver),
+          alpha(ayaji::Complex(alpha, 0)),
+          minusAlpha(ayaji::Complex(1 - alpha, 0)),
+          epsilon(epsilon),
+          maxRecurveTimes(maxRetTime) {
 #ifdef DEBUG
-        assert(mapper.size() == function.size() - 1 && "Number of mappers doesn't fit number of functions");
+        assert(mapper.size() == function.size() - 1 &&
+               "Number of mappers doesn't fit number of functions");
 #endif
         mapSrc = new MatrixMapper(matrixSize);
         mapDst = new MatrixMapper(matrixSize);
-
     }
 
     ~DPSolver() {
@@ -104,7 +105,7 @@ public:
      */
     bool run();
 
-    MatrixMapper* getResult(){ return mapSrc; }
+    MatrixMapper* getResult() { return mapSrc; }
 };
 
-#endif //QUANTUM_DPSOLVER_H
+#endif  // INCLUDE_SOLVER_DPSOLVER_H_

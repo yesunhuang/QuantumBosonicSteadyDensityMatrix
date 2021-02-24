@@ -1,14 +1,19 @@
-/* Copyright 2021 YesunHuang */
-#include <iostream>
+/* Copyright 2021 YesunHuang & guch8017*/
+
+#ifndef INCLUDE_EXPRESSION_EPDERIVER_H_
+#define INCLUDE_EXPRESSION_EPDERIVER_H_
+
 #include <functional>
-#include "MatrixMapper.h"
+#include <iostream>
+#include <vector>
 #include "./complex.h"
+#include "MatrixMapper.h"
 
 /**
  * @name: Factor
  * @fuction: 记录单个模式的乘子，见样例中[mode,[m,n]]
  */
-struct Factor{
+struct Factor {
     int mode;
     int bra;  // m
     int ket;  // n
@@ -18,8 +23,8 @@ struct Factor{
  * @name: Term
  * @fuction: 预处理后的项，一项由多个Factors组成
  */
-struct Term{
-    ayaji::Complex *coef;
+struct Term {
+    ayaji::Complex* coef;
     // 因为前一个只有引用，所以单独开了一个空间存乘在系数上的因子(比如-1)
     ayaji::Complex coefFactor;
     std::vector<Factor> factors;
@@ -29,12 +34,12 @@ struct Term{
  * @name: RawTerm
  * @fuction: 输入的原始项[Coef,int[]],见哈密顿量表示法
  */
-struct RawTerm{
-    ayaji::Complex coef; // 只存复数的引用
+struct RawTerm {
+    ayaji::Complex coef;  // 只存复数的引用
     std::vector<int> termOp;
 };
 
-class EpDeriver{
+class EpDeriver {
 private:
     std::vector<RawTerm> H;
     std::vector<RawTerm> co_ps;
@@ -44,21 +49,24 @@ private:
 
     void buildCollapseEps();
 
-    bool isSame(const std::vector<int>& a,const std::vector<int>& b) {
-        if (a.size()!=b.size()) return false;
-        for (int i=0;i<a.size();i++)
-            if (a[i]!=b[i])
+    bool isSame(const std::vector<int>& a, const std::vector<int>& b) {
+        if (a.size() != b.size())
+            return false;
+        for (int i = 0; i < a.size(); i++)
+            if (a[i] != b[i])
                 return false;
         return true;
     }
 
-    int findInside(const std::vector<std::vector<int>> &array, const std::vector<int> &target) {
-        for (int i=0;i<array.size();i++) {
-            if (isSame(array[i],target))
+    int findInside(const std::vector<std::vector<int>>& array,
+                   const std::vector<int>& target) {
+        for (int i = 0; i < array.size(); i++) {
+            if (isSame(array[i], target))
                 return i;
         }
         return -1;
     }
+
 public:
     // 乘在当前元上的表达式
     std::vector<Term> masterEps;
@@ -78,10 +86,8 @@ public:
      */
     EpDeriver(const std::vector<RawTerm>& hamiltonian,
               const std::vector<RawTerm>& collapse,
-              const std::vector<int>& index):
-              H(hamiltonian),
-              co_ps(collapse),
-              rawIndex(index){
+              const std::vector<int>& index)
+        : H(hamiltonian), co_ps(collapse), rawIndex(index) {
         buildHEps();
         buildCollapseEps();
     }
@@ -98,15 +104,16 @@ public:
     */
     static ayaji::Complex calEp(const std::vector<Term>& expression,
                                 const std::vector<int>& index);
-    
-    ayaji::Complex calNeighbourEP(const std::vector<int>& root, int index){
+
+    ayaji::Complex calNeighbourEP(const std::vector<int>& root, int index) {
 #ifdef DEBUG
-        assert(index >= neighbourIndexes.size() && "Neighbour index out of range");
+        assert(index >= neighbourIndexes.size() &&
+               "Neighbour index out of range");
 #endif
         return calEp(neighborEps[index], root);
     }
 
-    ayaji::Complex calMasterEP(const std::vector<int>& root){
+    ayaji::Complex calMasterEP(const std::vector<int>& root) {
         return calEp(masterEps, root);
     }
 
@@ -119,3 +126,5 @@ public:
     void updateCoef(std::vector<RawTerm> hamiltonian,
                     std::vector<RawTerm> collapse);
 };
+
+#endif  // INCLUDE_EXPRESSION_EPDERIVER_H_
