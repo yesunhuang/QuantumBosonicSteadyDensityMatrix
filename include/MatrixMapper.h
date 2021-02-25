@@ -14,7 +14,7 @@ struct TensorMatrix {
     ayaji::Complex* data;
     explicit TensorMatrix(size_t size) {
         x = size;
-        data = new ayaji::Complex[x ^ 2];
+        data = new ayaji::Complex[x * x];
     }
 
     ~TensorMatrix() { delete[] data; }
@@ -35,6 +35,7 @@ private:
     std::vector<size_t> off_op;
     size_t length;
     ayaji::Complex* data;
+    bool repaired;
 
     void rho(TensorMatrix& _rho,
              int length,
@@ -88,6 +89,20 @@ private:
         return get(offset);
     }
 
+    // TODO: 此处仅用double存储阶乘值，可能发生上溢出，如果有需要可改为 unsigned long long 或者 double
+    void subRepair(int depth, int offset, int mul){
+        if(depth == size.size()){
+            data[offset] *= ayaji::Complex(sqrt(mul), 0);
+            return;
+        }
+        int factor = 1;
+        subRepair(depth + 1, offset, 1);
+        for(int i = 1; i < size[depth]; ++i){
+            factor *= i;
+            subRepair(depth + 1, offset + i * off[depth], mul * factor);
+        }
+    }
+
 public:
     /**
      * 初始化
@@ -95,6 +110,7 @@ public:
      * n 个
      */
     explicit MatrixMapper(std::vector<int> size) {
+        this->repaired = false;
         this->size.resize(size.size() * 2);
         for (int i = 0; i < size.size(); ++i) {
             this->size[i] = this->size[i + 1] = size[i];
@@ -178,7 +194,20 @@ public:
 
     // ===============  Output Function  ===================
 
+    /**
+     * 约化还原归一
+     * 该函数应在计算完成后调用
+     * 该函数只应该被调用一次
+     */
+    void repair(){
+        subRepair(0, 0, 1);
+    }
+
     TensorMatrix rowRho() {
+        if(!repaired){
+            repair();
+            repaired = true;
+        }
         int len = 1;
         for (int i = 0; i < size.size(); i += 2) {
             len *= size[i];
