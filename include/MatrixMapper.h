@@ -1,4 +1,3 @@
-// Copyright 2021 guch8017
 //
 // Created by guch8017 on 2021/2/10.
 //
@@ -8,13 +7,14 @@
 #include <assert.h>
 #include <iostream>
 #include <vector>
+#include "./complex.h"
 
 struct TensorMatrix {
     size_t x;
     ayaji::Complex* data;
     explicit TensorMatrix(size_t size) {
         x = size;
-        data = new ayaji::Complex[x ^ 2];
+        data = new ayaji::Complex[x * x];
     }
 
     ~TensorMatrix() { delete[] data; }
@@ -35,6 +35,8 @@ private:
     std::vector<size_t> off_op;
     size_t length;
     ayaji::Complex* data;
+    bool repaired;
+    ayaji::Complex trace;
 
     void rho(TensorMatrix& _rho,
              int length,
@@ -88,6 +90,23 @@ private:
         return get(offset);
     }
 
+    // TODO: 此处仅用double存储阶乘值，可能发生上溢出，如果有需要可改为 unsigned long long 或者 double
+    void subRepair(int depth, int offset, int mul, int ind, bool tra){
+        if(depth == size.size()){
+            data[offset] *= ayaji::Complex(sqrt(mul), 0);
+            if(tra){
+                trace += data[offset];
+            }
+            return;
+        }
+        int factor = 1;
+        subRepair(depth + 1, offset, 1);
+        for(int i = 1; i < size[depth]; ++i){
+            factor *= i;
+            subRepair(depth + 1, offset + i * off[depth], mul * factor, i, tra && (((depth + 1) & 1) || (ind == i)));
+        }
+    }
+
 public:
     /**
      * 初始化
@@ -95,6 +114,7 @@ public:
      * n 个
      */
     explicit MatrixMapper(std::vector<int> size) {
+        this->repaired = false;
         this->size.resize(size.size() * 2);
         for (int i = 0; i < size.size(); ++i) {
             this->size[i] = this->size[i + 1] = size[i];
@@ -178,7 +198,36 @@ public:
 
     // ===============  Output Function  ===================
 
+    /**
+     * 约化还原归一
+     * 该函数应在计算完成后调用
+     * 该函数只应该被调用一次
+     */
+    void repair(){
+        trace = ayaji::Complex(0, 0);
+        subRepair(0, 0, 1, -1, true);
+        // 据说这样会快
+        int i;
+        for (i = 0; i < length / 8; ++i) {
+            data[i + 0] /= trace;
+            data[i + 1] /= trace;
+            data[i + 2] /= trace;
+            data[i + 3] /= trace;
+            data[i + 4] /= trace;
+            data[i + 5] /= trace;
+            data[i + 6] /= trace;
+            data[i + 7] /= trace;
+        }
+        for (i = i * 8; i < length; ++i) {
+            data[i] /= trace;
+        }
+    }
+
     TensorMatrix rowRho() {
+        if(!repaired){
+            repair();
+            repaired = true;
+        }
         int len = 1;
         for (int i = 0; i < size.size(); i += 2) {
             len *= size[i];

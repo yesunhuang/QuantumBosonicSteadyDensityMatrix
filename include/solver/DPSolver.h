@@ -1,4 +1,3 @@
-/* Copyright 2021 YesunHuang & guch8017 */
 //
 // Created by 顾超 on 2021/2/16.
 //
@@ -6,16 +5,16 @@
 #ifndef INCLUDE_SOLVER_DPSOLVER_H_
 #define INCLUDE_SOLVER_DPSOLVER_H_
 
-//
-// Created by guch8017 on 2021/2/10.
-//
-
-#include <MatrixMapper.h>
-#include <omp.h>
 #include <iostream>
-#include <vector>
+#if __APPLE__
+    // For macOS's OpenMP Library
+    #include "/usr/local/include/omp.h"
+#else
+    #include <omp.h>
+#endif
 #include "./complex.h"
 #include "expression/EpDeriver.h"
+#include "./MatrixMapper.h"
 
 class DPSolver {
 private:
