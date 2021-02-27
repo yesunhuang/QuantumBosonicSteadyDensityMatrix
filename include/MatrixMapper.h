@@ -100,7 +100,7 @@ private:
             return;
         }
         int factor = 1;
-        subRepair(depth + 1, offset, 1);
+        subRepair(depth + 1, offset, mul, 0, tra && (((depth + 1) & 1) || (ind == 0)));
         for(int i = 1; i < size[depth]; ++i){
             factor *= i;
             subRepair(depth + 1, offset + i * off[depth], mul * factor, i, tra && (((depth + 1) & 1) || (ind == i)));
@@ -240,6 +240,10 @@ public:
     }
 
     void partialRho(std::vector<int> traceMode) {}
+
+    inline size_t getLength(){
+        return length;
+    }
 };
 
 #endif  // INCLUDE_MATRIXMAPPER_H_
