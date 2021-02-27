@@ -1,3 +1,4 @@
+/* Copyright 2021 YesunHuang & guch8017 */
 //
 // Created by guch8017 on 2021/2/10.
 //
@@ -91,17 +92,17 @@ private:
     }
 
     // TODO: 此处仅用double存储阶乘值，可能发生上溢出，如果有需要可改为 unsigned long long 或者 double
-    void subRepair(int depth, int offset, int mul, int ind, bool tra){
-        if(depth == size.size()){
+    void subRepair(int depth, int offset, int mul, int ind, bool tra) {
+        if (depth == size.size()) {
             data[offset] *= ayaji::Complex(sqrt(mul), 0);
-            if(tra){
+            if (tra) {
                 trace += data[offset];
             }
             return;
         }
         int factor = 1;
         subRepair(depth + 1, offset, mul, 0, tra && (((depth + 1) & 1) || (ind == 0)));
-        for(int i = 1; i < size[depth]; ++i){
+        for (int i = 1; i < size[depth]; ++i) {
             factor *= i;
             subRepair(depth + 1, offset + i * off[depth], mul * factor, i, tra && (((depth + 1) & 1) || (ind == i)));
         }
@@ -203,7 +204,7 @@ public:
      * 该函数应在计算完成后调用
      * 该函数只应该被调用一次
      */
-    void repair(){
+    void repair() {
         trace = ayaji::Complex(0, 0);
         subRepair(0, 0, 1, -1, true);
         // 据说这样会快
@@ -224,7 +225,7 @@ public:
     }
 
     TensorMatrix rowRho() {
-        if(!repaired){
+        if (!repaired) {
             repair();
             repaired = true;
         }
