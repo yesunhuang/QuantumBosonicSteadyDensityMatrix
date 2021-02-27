@@ -1,9 +1,7 @@
 /* Copyright 2021 Ayajilin */
 #include <iostream>
-#include "./test.h"
 
 int main() {
-    hello();
     return 0;
 }
 
