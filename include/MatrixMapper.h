@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <iostream>
 #include <vector>
+#include <cmath>
 #include "./complex.h"
 
 struct TensorMatrix {
@@ -105,6 +106,19 @@ private:
             factor *= i;
             subRepair(depth + 1, offset + i * off[depth], mul * factor, i, tra && (((depth + 1) & 1) || (ind == i)));
         }
+    }
+
+    inline ayaji::Complex doAvgMoment(int* index, const std::vector<int> &order, int depth, int mul){
+        if(depth == size.size()){
+            return ayaji::Complex(mul, 0) * get(index);
+        }
+        ayaji::Complex ret(0, 0);
+        for(int i = 0; i < size[depth]; ++i){
+            index[depth] = i;
+            auto pw = std::pow(i, order[depth]);
+            ret += doAvgMoment(index, order, depth + 1, mul * pw);
+        }
+        return ret;
     }
 
 public:
@@ -239,7 +253,21 @@ public:
         return ret;
     }
 
-    void partialRho(std::vector<int> traceMode) {}
+    void partialRho(std::vector<int> traceMode) { "TODO"; }
+
+    /**
+     * 模式均值矩
+     * @param order 每个模式需要的矩的次数
+     * @return 模式均值矩
+     */
+    ayaji::Complex avgMoment(const std::vector<int> &order){
+        if(!repaired){
+            repair();
+            repaired = true;
+        }
+        int* index = (int *)malloc(sizeof(int) * size.size());
+        return doAvgMoment(index, order, 0, 1);
+    }
 
     inline size_t getLength(){
         return length;
