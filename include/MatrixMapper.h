@@ -240,6 +240,10 @@ public:
     }
 
     void partialRho(std::vector<int> traceMode) {}
+
+    inline size_t getLength(){
+        return length;
+    }
 };
 
 #endif  // INCLUDE_MATRIXMAPPER_H_
