@@ -16,7 +16,7 @@ void EpDeriver::buildHEps() {
             int mode = (*ops - 1) / 2 + 1;
             bool creat = ((*ops) % 2 != 0);
             if (neignborTermL.size() == 0 ||
-                mode != (*neignborTermL.end()).mode) {
+                mode != neignborTermL[neighborIndexL.size()-1].mode) {
                 Factor factor = {mode, 0, 0};
                 neignborTermL.push_back(factor);
                 neignborTermR.push_back(factor);
@@ -25,11 +25,11 @@ void EpDeriver::buildHEps() {
             if (creat) {
                 neighborIndexL[2 * (mode - 1)]--;
                 neighborIndexR[2 * mode - 1]++;
-                (*neignborTermR.end()).ket++;
+                neignborTermR[neighborIndexR.size()-1].ket++;
             } else {
                 neighborIndexL[2 * (mode - 1)]++;
                 neighborIndexR[2 * mode - 1]--;
-                (*neignborTermL.end()).bra++;
+                neignborTermL[neighborIndexL.size()-1].bra++;
             }
         }
         Term termL = {&(*rawTerm).coef, ayaji::Complex(0, 1), neignborTermL};
