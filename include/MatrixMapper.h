@@ -34,7 +34,7 @@ struct TensorMatrix {
         for (size_t i = 0; i < matrix.x; ++i) {
             auto xoff = matrix.x * i;
             s << '[';
-            for (size_t j = 0; j < matrix.x; ++i) {
+            for (size_t j = 0; j < matrix.x; ++j) {
                 s << matrix.data[xoff + j] << ", ";
             }
             s << ']' << std::endl;
@@ -65,11 +65,11 @@ private:
         } else {
             for (int i = 0; i < size[length]; ++i) {
                 curIndex[length] = i;
-                size_t off_x = sum_x + off_op[length] * i;
+                size_t off_x = sum_x + off_op[length / 2] * i;
                 for (int j = 0; j < size[length]; ++j) {
                     curIndex[length + 1] = j;
                     rho(_rho, length + 2, curIndex, off_x,
-                        sum_y + off_op[length + 1] * j);
+                        sum_y + off_op[length / 2] * j);
                 }
             }
         }
@@ -116,11 +116,46 @@ private:
             return;
         }
         int factor = 1;
-        subRepair(depth + 1, offset, mul, 0, tra && (((depth + 1) & 1) || (ind == 0)));
+        subRepair(depth + 1, offset, mul, 0, tra && (depth % 2 == 0 || (ind == 0)));
         for (int i = 1; i < size[depth]; ++i) {
             factor *= i;
             subRepair(depth + 1, offset + i * off[depth], mul * factor, i,
-                tra && (((depth + 1) & 1) || (ind == i)));
+                tra && (depth % 2 == 0 || (ind == i)));
+        }
+    }
+
+    /**
+     * 暴力算法，先保证不出bug
+     * @param depth
+     * @param index
+     */
+    void subRepairTest(int depth, std::vector<int> index){
+        if(depth == size.size()){
+            int d = 1;
+            for(auto i: index){
+                int j = 1;
+                for(int k = 2; k < i; ++k){
+                    j *= k;
+                }
+                d *= j;
+            }
+            set(index, get(index) * ayaji::Complex(sqrt(d), 0));
+            bool trace = true;
+            for(int i = 0; i < index.size(); i += 2){
+                if(index[i] != index[i + 1]){
+                    trace = false;
+                    break;
+                }
+            }
+            if(trace){
+                this->trace += get(index);
+            }
+        }else{
+            for(int i = 0; i < size[depth]; ++i){
+                auto ind2 = index;
+                ind2.push_back(i);
+                subRepairTest(depth + 1, ind2);
+            }
         }
     }
 
@@ -130,10 +165,11 @@ private:
             return ayaji::Complex(mul, 0) * get(index);
         }
         ayaji::Complex ret(0, 0);
-        for (int i = 0; i < size[depth]; ++i) {
+        for (int i = 1; i < size[depth]; ++i) {
             index[depth] = i;
-            auto pw = std::pow(i, order[depth]);
-            ret += doAvgMoment(index, order, depth + 1, mul * pw);
+            index[depth + 1] = i;
+            auto pw = std::pow(i, order[depth / 2]);
+            ret += doAvgMoment(index, order, depth + 2, mul * pw);
         }
         return ret;
     }
@@ -168,7 +204,7 @@ public:
         this->length = length;
         this->data = new ayaji::Complex[length];
         int i = 0;
-        ayaji::Complex init(static_cast<double>(1.0) / length, 0);
+        ayaji::Complex init(static_cast<double>(1.0) / offset, 0);
         // 据说这样会快
         for (i = 0; i < length / 8; ++i) {
             data[i + 0] = init;
@@ -238,7 +274,8 @@ public:
      */
     void repair() {
         trace = ayaji::Complex(0, 0);
-        subRepair(0, 0, 1, -1, true);
+        // subRepair(0, 0, 1, -1, true);
+        subRepairTest(0, std::vector<int>());
         // 据说这样会快
         int i;
         for (i = 0; i < length / 8; ++i) {
@@ -272,7 +309,9 @@ public:
         return ret;
     }
 
-    void partialRho(std::vector<int> traceMode) { "TODO"; }
+    void partialRho(std::vector<int> traceMode) {
+        // TODO
+    }
 
     /**
      * 模式均值矩
@@ -285,7 +324,9 @@ public:
             repaired = true;
         }
         int* index = reinterpret_cast<int*>(malloc(sizeof(int) * size.size()));
-        return doAvgMoment(index, order, 0, 1);
+        auto ret = doAvgMoment(index, order, 0, 1);
+        free(index);
+        return ret;
     }
 
     inline size_t getLength(){
