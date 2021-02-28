@@ -272,7 +272,9 @@ public:
         return ret;
     }
 
-    void partialRho(std::vector<int> traceMode) { "TODO"; }
+    void partialRho(std::vector<int> traceMode) {
+        // TODO
+    }
 
     /**
      * 模式均值矩
@@ -285,7 +287,9 @@ public:
             repaired = true;
         }
         int* index = reinterpret_cast<int*>(malloc(sizeof(int) * size.size()));
-        return doAvgMoment(index, order, 0, 1);
+        auto ret = doAvgMoment(index, order, 0, 1);
+        free(index);
+        return ret;
     }
 
     inline size_t getLength(){
