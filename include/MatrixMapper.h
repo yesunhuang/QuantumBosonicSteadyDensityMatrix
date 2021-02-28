@@ -16,10 +16,10 @@ struct TensorMatrix {
     ayaji::Complex* data;
     explicit TensorMatrix(size_t size) {
         x = size;
-        data = new ayaji::Complex[x * x];
+        data =new ayaji::Complex[x * x];
     }
 
-    ~TensorMatrix() { delete[] data; }
+    ~TensorMatrix() {  }
 
     inline void set(size_t _x, size_t _y, ayaji::Complex value) {
         data[_x * x + _y] = value;
@@ -293,7 +293,7 @@ public:
         }
     }
 
-    TensorMatrix rowRho() {
+    TensorMatrix *rowRho() {
         if (!repaired) {
             repair();
             repaired = true;
@@ -302,11 +302,11 @@ public:
         for (int i = 0; i < size.size(); i += 2) {
             len *= size[i];
         }
-        TensorMatrix ret(len);
+        TensorMatrix ret=TensorMatrix(len);
         int* l = reinterpret_cast<int*>(malloc(sizeof(int) * size.size()));
         rho(ret, 0, l, 0, 0);
         free(l);
-        return ret;
+        return &ret;
     }
 
     void partialRho(std::vector<int> traceMode) {
