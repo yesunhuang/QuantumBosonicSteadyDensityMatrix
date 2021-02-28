@@ -9,7 +9,7 @@
 void testSingleMode() {
     double E = 0.2;
     double kappa = 1;
-    int Na = 3;
+    int Na = 4;
     std::vector<int> Dim = std::vector<int>();
     Dim.push_back(Na);
     std::vector<int> rawIndex = std::vector<int>();
@@ -32,7 +32,7 @@ void testSingleMode() {
     Collapse.push_back(C0);
 
     EpDeriver dataSingle = EpDeriver(Hamiltonian, Collapse, rawIndex);
-    DPSolver dpsolver = DPSolver(Dim, dataSingle, 0.5, 1E-10, 2000);
+    DPSolver dpsolver = DPSolver(Dim, dataSingle, 0.5, 1E-10, 1000);
 
     dpsolver.run();
     MatrixMapper *rowSteadyMatrix = dpsolver.getResult();
