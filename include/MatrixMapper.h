@@ -28,6 +28,20 @@ struct TensorMatrix {
     inline ayaji::Complex get(size_t _x, size_t _y) {
         return data[_x * x + _y];
     }
+
+    friend inline std::ostream& operator<< (std::ostream &s, const TensorMatrix &matrix) {
+        s << '[';
+        for (size_t i = 0; i < matrix.x; ++i) {
+            auto xoff = matrix.x * i;
+            s << '[';
+            for (size_t j = 0; j < matrix.x; ++i) {
+                s << matrix.data[xoff + j] << ", ";
+            }
+            s << ']' << std::endl;
+        }
+        s << ']';
+        return s;
+    }
 };
 
 class MatrixMapper {
@@ -105,16 +119,18 @@ private:
         subRepair(depth + 1, offset, mul, 0, tra && (((depth + 1) & 1) || (ind == 0)));
         for (int i = 1; i < size[depth]; ++i) {
             factor *= i;
-            subRepair(depth + 1, offset + i * off[depth], mul * factor, i, tra && (((depth + 1) & 1) || (ind == i)));
+            subRepair(depth + 1, offset + i * off[depth], mul * factor, i,
+                tra && (((depth + 1) & 1) || (ind == i)));
         }
     }
 
-    inline ayaji::Complex doAvgMoment(int* index, const std::vector<int> &order, int depth, int mul){
-        if(depth == size.size()){
+    inline ayaji::Complex doAvgMoment(int* index,
+        const std::vector<int> &order, int depth, int mul) {
+        if (depth == size.size()) {
             return ayaji::Complex(mul, 0) * get(index);
         }
         ayaji::Complex ret(0, 0);
-        for(int i = 0; i < size[depth]; ++i){
+        for (int i = 0; i < size[depth]; ++i) {
             index[depth] = i;
             auto pw = std::pow(i, order[depth]);
             ret += doAvgMoment(index, order, depth + 1, mul * pw);
@@ -261,12 +277,12 @@ public:
      * @param order 每个模式需要的矩的次数
      * @return 模式均值矩
      */
-    ayaji::Complex avgMoment(const std::vector<int> &order){
-        if(!repaired){
+    ayaji::Complex avgMoment(const std::vector<int> &order) {
+        if (!repaired) {
             repair();
             repaired = true;
         }
-        int* index = (int *)malloc(sizeof(int) * size.size());
+        int* index = reinterpret_cast<int*>(malloc(sizeof(int) * size.size()));
         return doAvgMoment(index, order, 0, 1);
     }
 
