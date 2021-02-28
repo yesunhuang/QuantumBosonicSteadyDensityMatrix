@@ -54,14 +54,14 @@ private:
     bool repaired;
     ayaji::Complex trace;
 
-    void rho(TensorMatrix& _rho,
+    void rho(TensorMatrix *_rho,
              int length,
              int* curIndex,
              int sum_x,
              int sum_y) {
         // 注意：此处不要多线程化，使用了大量非线程安全操作，多线程绝对会出bug
         if (length == size.size()) {
-            _rho.set(sum_x, sum_y, get(curIndex));
+            _rho->set(sum_x, sum_y, get(curIndex));
         } else {
             for (int i = 0; i < size[length]; ++i) {
                 curIndex[length] = i;
@@ -151,6 +151,7 @@ private:
                 this->trace += get(index);
             }
         }else{
+            printf("Size Size: %lu  depth: %d\n", size.size(), depth);
             for(int i = 0; i < size[depth]; ++i){
                 auto ind2 = index;
                 ind2.push_back(i);
@@ -293,7 +294,7 @@ public:
         }
     }
 
-    TensorMatrix rowRho() {
+    TensorMatrix *rowRho() {
         if (!repaired) {
             repair();
             repaired = true;
@@ -302,7 +303,7 @@ public:
         for (int i = 0; i < size.size(); i += 2) {
             len *= size[i];
         }
-        TensorMatrix ret(len);
+        TensorMatrix *ret= new TensorMatrix(len);
         int* l = reinterpret_cast<int*>(malloc(sizeof(int) * size.size()));
         rho(ret, 0, l, 0, 0);
         free(l);
