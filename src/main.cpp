@@ -40,13 +40,16 @@ void testSingleMode() {
 
     for (int i = 0; i < Na; i++) {
         for (int j = 0; j < Na; j++) {
-            ayaji::Complex result = steadyMatrix.get(i, j);
+            std::cout << i << "  " << j << "  " << steadyMatrix.get(i, j) << std::endl;
         }
     }
 
     std::vector<int> order=std::vector<int>();
     order.push_back(1);
-    ayaji::Complex population=rowSteadyMatrix->avgMoment(order); 
+    ayaji::Complex population=rowSteadyMatrix->avgMoment(order);
+
+    std::cout << population << std::endl;
+    std::cout << steadyMatrix << std::endl;
 }
 
 int main() {
