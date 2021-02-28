@@ -13,6 +13,7 @@ inline std::vector<std::vector<int>> DPSolver::getNeighbours(
         for (int i = 0; i < root.size(); ++i) {
             index[i] += offset[i];
         }
+        ret.push_back(index);
     }
     return ret;
 }
