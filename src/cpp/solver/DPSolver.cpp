@@ -32,7 +32,7 @@ inline ayaji::Complex DPSolver::leftSum(const std::vector<int>& indexArray) {
     auto neighbourIndex = getNeighbours(indexArray);
     for (int i = 0; i < neighbourIndex.size(); ++i) {
         sum +=
-            epd.calNeighbourEP(indexArray, i) * mapSrc->get(neighbourIndex[i]);
+            epd.calNeighbourEP(neighbourIndex[i], i) * mapSrc->get(neighbourIndex[i]);
     }
     return sum;
 }
@@ -64,6 +64,11 @@ void DPSolver::doRun(int depth, const std::vector<int>& index) {
             auto nInd = std::vector<int>(index);
             nInd.push_back(i);
             nInd.push_back(j);
+            if (depth==matrixSizeArray.size()-1) {
+                if (i==0 && j==0) {
+                    continue;
+                }
+            }
             doRun(depth + 1, nInd);
         }
     }
