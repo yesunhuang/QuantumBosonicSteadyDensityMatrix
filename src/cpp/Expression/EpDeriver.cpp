@@ -9,27 +9,27 @@ void EpDeriver::buildHEps() {
         // 左右一起处理了
         std::vector<int> neighborIndexL = rawIndex;
         std::vector<int> neighborIndexR = rawIndex;
-        std::vector<Factor> neignborTermL = std::vector<Factor>();
         std::vector<Factor> neignborTermR = std::vector<Factor>();
+        std::vector<Factor> neignborTermL = std::vector<Factor>();        
         for (std::vector<int>::iterator ops = (*rawTerm).termOp.begin();
              ops != (*rawTerm).termOp.end(); ops++) {
             int mode = (*ops - 1) / 2 + 1;
             bool creat = ((*ops) % 2 != 0);
             if (neignborTermL.size() == 0 ||
-                mode != (*neignborTermL.end()).mode) {
+                mode != neignborTermL[neignborTermL.size()-1].mode) {
                 Factor factor = {mode, 0, 0};
-                neignborTermL.push_back(factor);
                 neignborTermR.push_back(factor);
+                neignborTermL.push_back(factor);
             }
             // 预处理算符作用
             if (creat) {
                 neighborIndexL[2 * (mode - 1)]--;
                 neighborIndexR[2 * mode - 1]++;
-                (*neignborTermR.end()).ket++;
+                neignborTermR[neignborTermR.size()-1].ket++;
             } else {
                 neighborIndexL[2 * (mode - 1)]++;
                 neighborIndexR[2 * mode - 1]--;
-                (*neignborTermL.end()).bra++;
+                neignborTermL[neignborTermL.size()-1].bra++;
             }
         }
         Term termL = {&(*rawTerm).coef, ayaji::Complex(0, 1), neignborTermL};
