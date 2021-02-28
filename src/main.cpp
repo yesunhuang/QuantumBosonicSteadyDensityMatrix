@@ -43,6 +43,10 @@ void testSingleMode() {
             ayaji::Complex result = steadyMatrix.get(i, j);
         }
     }
+
+    std::vector<int> order=std::vector<int>();
+    order.push_back(1);
+    ayaji::Complex population=rowSteadyMatrix->avgMoment(order); 
 }
 
 int main() {
