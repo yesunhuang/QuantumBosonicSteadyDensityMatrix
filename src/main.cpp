@@ -32,7 +32,7 @@ void testSingleMode() {
     Collapse.push_back(C0);
 
     EpDeriver dataSingle = EpDeriver(Hamiltonian, Collapse, rawIndex);
-    DPSolver dpsolver = DPSolver(Dim, dataSingle, 0.5, 1E-10, 1000);
+    DPSolver dpsolver = DPSolver(Dim, dataSingle, 0.5, 1E-10, 2000);
 
     dpsolver.run();
     MatrixMapper *rowSteadyMatrix = dpsolver.getResult();

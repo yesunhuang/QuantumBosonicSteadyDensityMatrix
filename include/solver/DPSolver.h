@@ -73,6 +73,8 @@ private:
 
     void doRun(int depth, const std::vector<int>& index);
 
+    std::vector<int> DPSolver::getOppsite(std::vector<int> root) ;
+
 public:
     DPSolver(const std::vector<int> &matrixSize,
              EpDeriver epDeriver,
