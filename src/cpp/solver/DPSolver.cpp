@@ -53,6 +53,7 @@ void DPSolver::doRun(int depth, const std::vector<int>& index) {
             }
         }
         mapDst->set(index, newValue);
+        return;
     }
     int loopSize = matrixSizeArray[depth];
     // 主循环体

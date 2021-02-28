@@ -195,7 +195,8 @@ public:
     inline ayaji::Complex get(const std::vector<int>& list) {
         size_t offset = 0;
         for (int i = 0; i < list.size(); i += 2) {
-            if (size[i] < list[i] || size[i + 1] < list[i + 1])
+            if (size[i] <= list[i] || size[i + 1] <= list[i + 1]
+                ||  list[i]<0   ||  list[i+1]<0)
                 return ayaji::Complex(0, 0);
             offset += off[i] * list[i] + off[i + 1] * list[i + 1];
         }
@@ -215,7 +216,8 @@ public:
     void set(const std::vector<int>& list, ayaji::Complex value) {
         size_t offset = 0;
         for (int i = 0; i < list.size(); i += 2) {
-            if (size[i] < list[i] || size[i + 1] < list[i + 1])
+            if (size[i] <= list[i] || size[i + 1] <= list[i + 1]
+                ||  list[i]<0   ||  list[i+1]<0)
                 return;
             offset += off[i] * list[i] + off[i + 1] * list[i + 1];
         }
