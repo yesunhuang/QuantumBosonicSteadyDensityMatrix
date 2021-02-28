@@ -36,7 +36,7 @@ void testSingleMode() {
 
     dpsolver.run();
     MatrixMapper *rowSteadyMatrix = dpsolver.getResult();
-    TensorMatrix steadyMatrix = rowSteadyMatrix->rowRho();
+    TensorMatrix steadyMatrix = *rowSteadyMatrix->rowRho();
 
     for (int i = 0; i < Na; i++) {
         for (int j = 0; j < Na; j++) {
