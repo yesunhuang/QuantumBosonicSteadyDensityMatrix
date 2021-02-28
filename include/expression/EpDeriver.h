@@ -11,7 +11,7 @@
 
 /**
  * @name: Factor
- * @fuction: 记录单个模式的乘子，见样例中[mode,[m,n]]
+ * @function: 记录单个模式的乘子，见样例中[mode,[m,n]]
  */
 struct Factor {
     int mode;
@@ -21,7 +21,7 @@ struct Factor {
 
 /**
  * @name: Term
- * @fuction: 预处理后的项，一项由多个Factors组成
+ * @function: 预处理后的项，一项由多个Factors组成
  */
 struct Term {
     ayaji::Complex* coef;
@@ -32,7 +32,7 @@ struct Term {
 
 /**
  * @name: RawTerm
- * @fuction: 输入的原始项[Coef,int[]],见哈密顿量表示法
+ * @function: 输入的原始项[Coef,int[]],见哈密顿量表示法
  */
 struct RawTerm {
     ayaji::Complex coef;  // 只存复数的引用
@@ -78,7 +78,7 @@ public:
      * @name: EpDeriver(std::vector<RawTerm> hamiltonian,
               std::vector<RawTerm> collapse,
               std::vector<int> index)
-     * @fuction: 预处理
+     * @des: 预处理
      * @param {*hamiltonian} 哈密顿量
      * @param {*collapse} 坍塌算符
      * @param {*index} 全是零的索引
@@ -92,8 +92,9 @@ public:
         buildCollapseEps();
     }
     /**
+     * @brief 计算表达式值
+     * 
      * @name: calEp(Expression expression,std::vector<int> index)
-     * @fuction: 计算表达式值
      * @param {*expression}:符号表达式
      * @param {*index}:元素索引
      * @return {*int}:值
@@ -119,7 +120,7 @@ public:
 
     /**
      * @name: updateCoef
-     * @fuction: 更新系数,不用再预处理一次
+     * @function: 更新系数,不用再预处理一次
      * @param {*hamiltonian} 哈密顿量
      * @return {*collapse} 坍塌算符
      */

@@ -28,6 +28,20 @@ struct TensorMatrix {
     inline ayaji::Complex get(size_t _x, size_t _y) {
         return data[_x * x + _y];
     }
+
+    friend inline std::ostream& operator<< (std::ostream &s, const TensorMatrix &matrix) {
+        s << '[';
+        for (size_t i = 0; i < matrix.x; ++i) {
+            auto xoff = matrix.x * i;
+            s << '[';
+            for (size_t j = 0; j < matrix.x; ++j) {
+                s << matrix.data[xoff + j] << ", ";
+            }
+            s << ']' << std::endl;
+        }
+        s << ']';
+        return s;
+    }
 };
 
 class MatrixMapper {
@@ -51,11 +65,11 @@ private:
         } else {
             for (int i = 0; i < size[length]; ++i) {
                 curIndex[length] = i;
-                size_t off_x = sum_x + off_op[length] * i;
+                size_t off_x = sum_x + off_op[length / 2] * i;
                 for (int j = 0; j < size[length]; ++j) {
                     curIndex[length + 1] = j;
                     rho(_rho, length + 2, curIndex, off_x,
-                        sum_y + off_op[length + 1] * j);
+                        sum_y + off_op[length / 2] * j);
                 }
             }
         }
@@ -102,22 +116,60 @@ private:
             return;
         }
         int factor = 1;
-        subRepair(depth + 1, offset, mul, 0, tra && (((depth + 1) & 1) || (ind == 0)));
+        subRepair(depth + 1, offset, mul, 0, tra && (depth % 2 == 0 || (ind == 0)));
         for (int i = 1; i < size[depth]; ++i) {
             factor *= i;
-            subRepair(depth + 1, offset + i * off[depth], mul * factor, i, tra && (((depth + 1) & 1) || (ind == i)));
+            subRepair(depth + 1, offset + i * off[depth], mul * factor, i,
+                tra && (depth % 2 == 0 || (ind == i)));
         }
     }
 
-    inline ayaji::Complex doAvgMoment(int* index, const std::vector<int> &order, int depth, int mul){
+    /**
+     * 暴力算法，先保证不出bug
+     * @param depth
+     * @param index
+     */
+    void subRepairTest(int depth, std::vector<int> index){
         if(depth == size.size()){
+            int d = 1;
+            for(auto i: index){
+                int j = 1;
+                for(int k = 2; k < i; ++k){
+                    j *= k;
+                }
+                d *= j;
+            }
+            set(index, get(index) * ayaji::Complex(sqrt(d), 0));
+            bool trace = true;
+            for(int i = 0; i < index.size(); i += 2){
+                if(index[i] != index[i + 1]){
+                    trace = false;
+                    break;
+                }
+            }
+            if(trace){
+                this->trace += get(index);
+            }
+        }else{
+            for(int i = 0; i < size[depth]; ++i){
+                auto ind2 = index;
+                ind2.push_back(i);
+                subRepairTest(depth + 1, ind2);
+            }
+        }
+    }
+
+    inline ayaji::Complex doAvgMoment(int* index,
+        const std::vector<int> &order, int depth, int mul) {
+        if (depth == size.size()) {
             return ayaji::Complex(mul, 0) * get(index);
         }
         ayaji::Complex ret(0, 0);
-        for(int i = 0; i < size[depth]; ++i){
+        for (int i = 1; i < size[depth]; ++i) {
             index[depth] = i;
-            auto pw = std::pow(i, order[depth]);
-            ret += doAvgMoment(index, order, depth + 1, mul * pw);
+            index[depth + 1] = i;
+            auto pw = std::pow(i, order[depth / 2]);
+            ret += doAvgMoment(index, order, depth + 2, mul * pw);
         }
         return ret;
     }
@@ -152,7 +204,7 @@ public:
         this->length = length;
         this->data = new ayaji::Complex[length];
         int i = 0;
-        ayaji::Complex init(static_cast<double>(1.0) / length, 0);
+        ayaji::Complex init(static_cast<double>(1.0) / offset, 0);
         // 据说这样会快
         for (i = 0; i < length / 8; ++i) {
             data[i + 0] = init;
@@ -179,7 +231,8 @@ public:
     inline ayaji::Complex get(const std::vector<int>& list) {
         size_t offset = 0;
         for (int i = 0; i < list.size(); i += 2) {
-            if (size[i] < list[i] || size[i + 1] < list[i + 1])
+            if (size[i] <= list[i] || size[i + 1] <= list[i + 1]
+                ||  list[i]<0   ||  list[i+1]<0)
                 return ayaji::Complex(0, 0);
             offset += off[i] * list[i] + off[i + 1] * list[i + 1];
         }
@@ -199,7 +252,8 @@ public:
     void set(const std::vector<int>& list, ayaji::Complex value) {
         size_t offset = 0;
         for (int i = 0; i < list.size(); i += 2) {
-            if (size[i] < list[i] || size[i + 1] < list[i + 1])
+            if (size[i] <= list[i] || size[i + 1] <= list[i + 1]
+                ||  list[i]<0   ||  list[i+1]<0)
                 return;
             offset += off[i] * list[i] + off[i + 1] * list[i + 1];
         }
@@ -220,7 +274,8 @@ public:
      */
     void repair() {
         trace = ayaji::Complex(0, 0);
-        subRepair(0, 0, 1, -1, true);
+        // subRepair(0, 0, 1, -1, true);
+        subRepairTest(0, std::vector<int>());
         // 据说这样会快
         int i;
         for (i = 0; i < length / 8; ++i) {
@@ -254,20 +309,24 @@ public:
         return ret;
     }
 
-    void partialRho(std::vector<int> traceMode) { "TODO"; }
+    void partialRho(std::vector<int> traceMode) {
+        // TODO
+    }
 
     /**
      * 模式均值矩
      * @param order 每个模式需要的矩的次数
      * @return 模式均值矩
      */
-    ayaji::Complex avgMoment(const std::vector<int> &order){
-        if(!repaired){
+    ayaji::Complex avgMoment(const std::vector<int> &order) {
+        if (!repaired) {
             repair();
             repaired = true;
         }
-        int* index = (int *)malloc(sizeof(int) * size.size());
-        return doAvgMoment(index, order, 0, 1);
+        int* index = reinterpret_cast<int*>(malloc(sizeof(int) * size.size()));
+        auto ret = doAvgMoment(index, order, 0, 1);
+        free(index);
+        return ret;
     }
 
     inline size_t getLength(){

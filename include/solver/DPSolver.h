@@ -27,6 +27,10 @@ private:
     const double epsilon;
     const int maxRecurveTimes;
 
+    /**
+     * 矩阵大小列表
+     * 注意：m[0] = 3 代表第一层为 3 * 3
+     */
     const std::vector<int> matrixSizeArray;
 
     EpDeriver epd;
@@ -34,11 +38,6 @@ private:
      * 结果是否收敛
      */
     bool fit;
-
-    /**
-     * 邻居数量 由预处理给出
-     */
-    size_t neighborSize;
 
     /**
      * 邻居列表
@@ -75,7 +74,7 @@ private:
     void doRun(int depth, const std::vector<int>& index);
 
 public:
-    DPSolver(std::vector<int> matrixSize,
+    DPSolver(const std::vector<int> &matrixSize,
              EpDeriver epDeriver,
              double alpha,
              double epsilon,

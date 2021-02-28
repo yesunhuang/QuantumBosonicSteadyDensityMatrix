@@ -10,7 +10,7 @@ void EpDeriver::buildHEps() {
         std::vector<int> neighborIndexL = rawIndex;
         std::vector<int> neighborIndexR = rawIndex;
         std::vector<Factor> neignborTermR = std::vector<Factor>();
-        std::vector<Factor> neignborTermL = std::vector<Factor>();        
+        std::vector<Factor> neignborTermL = std::vector<Factor>();
         for (std::vector<int>::iterator ops = (*rawTerm).termOp.begin();
              ops != (*rawTerm).termOp.end(); ops++) {
             int mode = (*ops - 1) / 2 + 1;

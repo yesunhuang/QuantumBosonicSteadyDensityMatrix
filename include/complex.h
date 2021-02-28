@@ -18,6 +18,7 @@
 #include <cstdlib>
 #include <exception>
 #include <string>
+#include <ostream>
 
 #ifdef HIGH_PRECISION
 // load the high precision gnu library
@@ -57,6 +58,11 @@ public:
     void setReal(double real);
     void setImage(double image);
     void set(double real, double image);
+
+    friend inline std::ostream& operator<< (std::ostream &out, const Complex& c) {
+        out << c.real << "+" << c.image << "i";
+        return out;
+    }
 
 private:
     static constexpr double episilon = 10e-7;

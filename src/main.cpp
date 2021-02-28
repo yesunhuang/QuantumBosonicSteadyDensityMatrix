@@ -19,7 +19,7 @@ void testSingleMode() {
     std::vector<int> H1O = std::vector<int>();
     H1O.push_back(1);
     std::vector<int> H2O = std::vector<int>();
-    H1O.push_back(2);
+    H2O.push_back(2);
     RawTerm H1 = {ayaji::Complex(E, 0), H1O};
     RawTerm H2 = {ayaji::Complex(E, 0), H2O};
     std::vector<int> CO = std::vector<int>();
