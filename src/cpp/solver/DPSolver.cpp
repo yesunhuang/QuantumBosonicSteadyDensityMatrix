@@ -30,7 +30,7 @@ inline std::vector<int> DPSolver::getNeighbour(std::vector<int> root,
 inline ayaji::Complex DPSolver::leftSum(const std::vector<int>& indexArray) {
     ayaji::Complex sum;
     auto neighbourIndex = getNeighbours(indexArray);
-    for (int i = 0; i < neighborSize; ++i) {
+    for (int i = 0; i < neighbourIndex.size(); ++i) {
         sum +=
             epd.calNeighbourEP(indexArray, i) * mapSrc->get(neighbourIndex[i]);
     }
