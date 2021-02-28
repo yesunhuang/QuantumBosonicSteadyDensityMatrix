@@ -99,10 +99,6 @@ public:
      * @param {*index}:元素索引
      * @return {*int}:值
      */
-    /*
-    这个东西在使用时要特别注意，无论你是不是在求邻居的系数，你输入给它的index是当前
-    矩阵元的index，即别把邻居的index传给它！！！
-    */
     static ayaji::Complex calEp(const std::vector<Term>& expression,
                                 const std::vector<int>& index);
 

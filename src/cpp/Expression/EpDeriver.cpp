@@ -32,8 +32,8 @@ void EpDeriver::buildHEps() {
                 neignborTermL[neignborTermL.size()-1].bra++;
             }
         }
-        Term termL = {&(*rawTerm).coef, ayaji::Complex(0, 1), neignborTermL};
-        Term termR = {&(*rawTerm).coef, ayaji::Complex(0, -1), neignborTermR};
+        Term termL = {&(*rawTerm).coef, ayaji::Complex(0, -1), neignborTermL};
+        Term termR = {&(*rawTerm).coef, ayaji::Complex(0, 1), neignborTermR};
         if (isSame(rawIndex, neighborIndexL)) {
             termL.coefFactor *= ayaji::Complex(-1, 0);
             termR.coefFactor *= ayaji::Complex(-1, 0);
@@ -124,9 +124,9 @@ ayaji::Complex EpDeriver::calEp(const std::vector<Term>& expression,
             // 获取对应的行列索引
             int row = index[2 * ((*factor).mode - 1)];
             int col = index[2 * (*factor).mode - 1];
-            for (int i = row + 1; i <= row + (*factor).bra; i++)
+            for (int i = row - (*factor).bra+1; i <= row ; i++)
                 realTermVal *= i;
-            for (int i = col + 1; i <= col + (*factor).ket; i++)
+            for (int i = col - (*factor).bra+1; i <= col ; i++)
                 realTermVal *= i;
         }
         termVal *= ayaji::Complex(realTermVal, 0);

@@ -39,7 +39,7 @@ void testSingleMode() {
     TensorMatrix steadyMatrix = rowSteadyMatrix->rowRho();
 
     for (int i = 0; i < Na; i++) {
-        for (int j = 0; i < Na; i++) {
+        for (int j = 0; j < Na; j++) {
             ayaji::Complex result = steadyMatrix.get(i, j);
         }
     }
