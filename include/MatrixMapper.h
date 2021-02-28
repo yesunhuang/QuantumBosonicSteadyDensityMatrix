@@ -34,7 +34,7 @@ struct TensorMatrix {
         for (size_t i = 0; i < matrix.x; ++i) {
             auto xoff = matrix.x * i;
             s << '[';
-            for (size_t j = 0; j < matrix.x; ++i) {
+            for (size_t j = 0; j < matrix.x; ++j) {
                 s << matrix.data[xoff + j] << ", ";
             }
             s << ']' << std::endl;
@@ -69,7 +69,7 @@ private:
                 for (int j = 0; j < size[length]; ++j) {
                     curIndex[length + 1] = j;
                     rho(_rho, length + 2, curIndex, off_x,
-                        sum_y + off_op[length + 1] * j);
+                        sum_y + off_op[length] * j);
                 }
             }
         }
@@ -130,10 +130,11 @@ private:
             return ayaji::Complex(mul, 0) * get(index);
         }
         ayaji::Complex ret(0, 0);
-        for (int i = 0; i < size[depth]; ++i) {
+        for (int i = 1; i < size[depth]; ++i) {
             index[depth] = i;
-            auto pw = std::pow(i, order[depth]);
-            ret += doAvgMoment(index, order, depth + 1, mul * pw);
+            index[depth + 1] = i;
+            auto pw = std::pow(i, order[depth / 2]);
+            ret += doAvgMoment(index, order, depth + 2, mul * pw);
         }
         return ret;
     }
@@ -168,7 +169,7 @@ public:
         this->length = length;
         this->data = new ayaji::Complex[length];
         int i = 0;
-        ayaji::Complex init(static_cast<double>(1.0) / length, 0);
+        ayaji::Complex init(static_cast<double>(1.0) / offset, 0);
         // 据说这样会快
         for (i = 0; i < length / 8; ++i) {
             data[i + 0] = init;
