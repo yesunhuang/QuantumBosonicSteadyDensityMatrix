@@ -187,7 +187,7 @@ public:
     }
 
     inline ayaji::Complex get(size_t offset) {
-        assert(offset >= length && "Index out of range");
+        assert(offset < length && "Index out of range");
         return data[offset];
     }
 
@@ -207,7 +207,7 @@ public:
     }
 
     inline void set(size_t offset, ayaji::Complex value) {
-        assert(offset >= length && "Index out of range");
+        assert(offset < length && "Index out of range");
         data[offset] = value;
     }
 
