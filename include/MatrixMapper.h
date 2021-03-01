@@ -180,11 +180,11 @@ public:
      * @param size 矩阵维度列表 注意：size[m]=n 代表 第m维上有 n * n 个元素而非
      * n 个
      */
-    explicit MatrixMapper(std::vector<int> size) {
+    explicit MatrixMapper(const std::vector<int> &size) {
         this->repaired = false;
         this->size.resize(size.size() * 2);
-        for (int i = 0; i < size.size(); ++i) {
-            this->size[i] = this->size[i + 1] = size[i];
+        for (int i = 0; i < size.size() * 2; i += 2) {
+            this->size[i] = this->size[i + 1] = size[i / 2];
         }
         int length = 1;
         int offset = 1;
@@ -205,7 +205,6 @@ public:
         this->data = new ayaji::Complex[length];
         int i = 0;
         ayaji::Complex init(static_cast<double>(1.0) / offset, 0);
-        // 据说这样会快
         for (i = 0; i < length; ++i) {
             data[i] = init;
         }
