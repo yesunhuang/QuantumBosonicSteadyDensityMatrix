@@ -9,7 +9,7 @@
 void testSingleMode() {
     double E = 0.2;
     double kappa = 1;
-    int Na = 3;
+    int Na = 4;
     std::vector<int> Dim = std::vector<int>();
     Dim.push_back(Na);
     std::vector<int> rawIndex = std::vector<int>();
@@ -36,11 +36,11 @@ void testSingleMode() {
 
     dpsolver.run();
     MatrixMapper *rowSteadyMatrix = dpsolver.getResult();
-    TensorMatrix steadyMatrix = *rowSteadyMatrix->rowRho();
+    TensorMatrix *steadyMatrix = rowSteadyMatrix->rowRho();
 
     for (int i = 0; i < Na; i++) {
         for (int j = 0; j < Na; j++) {
-            std::cout << i << "  " << j << "  " << steadyMatrix.get(i, j) << std::endl;
+            std::cout << i << "  " << j << "  " << steadyMatrix->get(i, j) << std::endl;
         }
     }
 
@@ -49,7 +49,7 @@ void testSingleMode() {
     ayaji::Complex population=rowSteadyMatrix->avgMoment(order);
 
     std::cout << population << std::endl;
-    std::cout << steadyMatrix << std::endl;
+    std::cout << *steadyMatrix << std::endl;
 }
 
 int main() {

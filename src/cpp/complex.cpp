@@ -305,6 +305,11 @@ Complex Complex::operator--(int) {
     return c;
 }
 
+Complex Complex::conj() {
+    Complex tmp=Complex(this->real,-1*this->image);
+    return tmp;
+}
+
 bool Complex::isZero() const {
     return (abs(this->real) < episilon && abs(this->image) < episilon);
 }

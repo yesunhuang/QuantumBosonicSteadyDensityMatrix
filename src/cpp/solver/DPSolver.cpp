@@ -37,6 +37,15 @@ inline ayaji::Complex DPSolver::leftSum(const std::vector<int>& indexArray) {
     return sum;
 }
 
+std::vector<int> DPSolver::getOppsite(std::vector<int> root) {
+    std::vector<int> tmp=std::vector<int> ();
+    for (int i=0;i<root.size();i+=2) {
+        tmp.push_back(root[i+1]);
+        tmp.push_back(root[i]);
+    }
+    return tmp;
+}
+
 void DPSolver::doRun(int depth, const std::vector<int>& index) {
     if (depth == matrixSizeArray.size()) {
         ayaji::Complex s1 = leftSum(index);
@@ -53,6 +62,7 @@ void DPSolver::doRun(int depth, const std::vector<int>& index) {
             }
         }
         mapDst->set(index, newValue);
+        mapDst->set(getOppsite(index), newValue.conj());
         return;
     }
     int loopSize = matrixSizeArray[depth];
@@ -60,7 +70,7 @@ void DPSolver::doRun(int depth, const std::vector<int>& index) {
     // 所有数据都是从mapSrc读取写入到mapDst，故不会出现读写访问冲突，不加锁
 #pragma omp parallel for
     for (int i = 0; i < loopSize; ++i) {
-        for (int j = 0; j < loopSize; ++j) {
+        for (int j = 0; j <=i ; ++j) {
             auto nInd = std::vector<int>(index);
             nInd.push_back(i);
             nInd.push_back(j);

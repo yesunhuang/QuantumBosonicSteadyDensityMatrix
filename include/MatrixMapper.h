@@ -132,9 +132,9 @@ private:
     void subRepairTest(int depth, std::vector<int> index){
         if(depth == size.size()){
             int d = 1;
-            for(auto i: index){
+            for (int i = 0 ; i<index.size();++i){
                 int j = 1;
-                for(int k = 2; k < i; ++k){
+                for(int k = 2; k < index[i]+1; ++k){
                     j *= k;
                 }
                 d *= j;
@@ -151,9 +151,8 @@ private:
                 this->trace += get(index);
             }
         }else{
-            printf("Size Size: %lu  depth: %d\n", size.size(), depth);
             for(int i = 0; i < size[depth]; ++i){
-                auto ind2 = index;
+                std::vector<int> ind2 = index;
                 ind2.push_back(i);
                 subRepairTest(depth + 1, ind2);
             }
@@ -207,17 +206,7 @@ public:
         int i = 0;
         ayaji::Complex init(static_cast<double>(1.0) / offset, 0);
         // 据说这样会快
-        for (i = 0; i < length / 8; ++i) {
-            data[i + 0] = init;
-            data[i + 1] = init;
-            data[i + 2] = init;
-            data[i + 3] = init;
-            data[i + 4] = init;
-            data[i + 5] = init;
-            data[i + 6] = init;
-            data[i + 7] = init;
-        }
-        for (i = i * 8; i < length; ++i) {
+        for (i = 0; i < length; ++i) {
             data[i] = init;
         }
     }
@@ -275,21 +264,11 @@ public:
      */
     void repair() {
         trace = ayaji::Complex(0, 0);
-        // subRepair(0, 0, 1, -1, true);
+        //subRepair(0, 0, 1, -1, true);
         subRepairTest(0, std::vector<int>());
         // 据说这样会快
         int i;
-        for (i = 0; i < length / 8; ++i) {
-            data[i + 0] /= trace;
-            data[i + 1] /= trace;
-            data[i + 2] /= trace;
-            data[i + 3] /= trace;
-            data[i + 4] /= trace;
-            data[i + 5] /= trace;
-            data[i + 6] /= trace;
-            data[i + 7] /= trace;
-        }
-        for (i = i * 8; i < length; ++i) {
+        for (i = 0; i < length; ++i) {
             data[i] /= trace;
         }
     }
