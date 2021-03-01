@@ -124,9 +124,9 @@ ayaji::Complex EpDeriver::calEp(const std::vector<Term>& expression,
             // 获取对应的行列索引
             int row = index[2 * ((*factor).mode - 1)];
             int col = index[2 * (*factor).mode - 1];
-            for (int i = row - (*factor).bra+1; i <= row ; i++)
+            for (int i = row - (*factor).bra+1;   i <= row ; i++)
                 realTermVal *= i;
-            for (int i = col - (*factor).bra+1; i <= col ; i++)
+            for (int i = col - (*factor).ket+1;  i <= col ; i++)
                 realTermVal *= i;
         }
         termVal *= ayaji::Complex(realTermVal, 0);

@@ -49,6 +49,8 @@ public:
     Complex operator++(int);
     Complex operator--(int);
 
+    Complex conj();
+    
     bool isZero() const;
 
     double getReal() const;
