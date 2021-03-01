@@ -37,7 +37,7 @@ inline ayaji::Complex DPSolver::leftSum(const std::vector<int>& indexArray) {
     return sum;
 }
 
-std::vector<int> DPSolver::getOppsite(std::vector<int> root) {
+std::vector<int> DPSolver::getOpposite(std::vector<int> root) {
     std::vector<int> tmp=std::vector<int> ();
     for (int i=0;i<root.size();i+=2) {
         tmp.push_back(root[i+1]);
@@ -62,7 +62,7 @@ void DPSolver::doRun(int depth, const std::vector<int>& index) {
             }
         }
         mapDst->set(index, newValue);
-        mapDst->set(getOppsite(index), newValue.conj());
+        mapDst->set(getOpposite(index), newValue.conj());
         return;
     }
     int loopSize = matrixSizeArray[depth];
