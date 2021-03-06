@@ -137,6 +137,7 @@ inline void Py_RaiseError(PyObject* errType, const char* errFmt, Args... args) {
     if (!PyErr_Occurred()) {
         PyErr_Format(errType, errFmt, args...);
     }
+    PyErr_Print();
 }
 
 template<typename T>

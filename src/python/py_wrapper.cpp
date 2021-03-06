@@ -109,6 +109,28 @@ method_DPSolverGetResult(PyObject* self, PyObject* args) {
     return cap;
 }
 
+static PyObject*
+method_MatrixMapperRowRho(PyObject* self, PyObject* args) {
+    auto argReader = ayaji::PyArgsReader(args);
+    // only accept 1 param
+    if (!argReader.CheckArgsCount(1))
+        Py_RETURN_NONE;
+    auto argMatrixMapper = argReader.GetArg(0);
+
+    auto matrixMapper = static_cast<MatrixMapper*>(
+        PyCapsule_GetPointer(argMatrixMapper, "MatrixMapper"));
+    if (matrixMapper == nullptr) {
+        ayaji::Py_RaiseError(PyExc_TypeError, "Argument should be a MatrixMapper type. Object: %R",
+            argMatrixMapper);
+        Py_RETURN_NONE;
+    }
+
+    TensorMatrix* matrix = matrixMapper->rowRho();
+    PyObject* cap = PyCapsule_New(matrix, "TensorMatrix", nullptr);
+
+    return cap;
+}
+
 /** ------------------------------------------------
  * 
  * * Python core runtime area.
