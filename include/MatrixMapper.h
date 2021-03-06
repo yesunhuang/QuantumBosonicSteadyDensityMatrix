@@ -176,6 +176,19 @@ private:
         return ret;
     }
 
+    void _init(std::vector<int> index, ayaji::Complex value){
+        if(index.size() == size.size()){
+            set(index, value, false);
+        }else{
+            for(int i = 0; i < size[index.size()]; ++i){
+                auto ind2 = index;
+                ind2.push_back(i);
+                ind2.push_back(i);
+                _init(ind2, value);
+            }
+        }
+    }
+
 public:
     /**
      * 初始化
@@ -207,9 +220,12 @@ public:
         this->data = new ayaji::Complex[length];
         int i = 0;
         ayaji::Complex init(static_cast<double>(1.0) / offset, 0);
+        /*
         for (i = 0; i < length; ++i) {
             data[i] = init;
         }
+         */
+        _init(std::vector<int>(), init);
     }
 
     ~MatrixMapper() { delete[] data; }

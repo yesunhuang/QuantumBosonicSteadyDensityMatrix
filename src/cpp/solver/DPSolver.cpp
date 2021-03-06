@@ -62,7 +62,7 @@ void DPSolver::doRun(int depth, const std::vector<int>& index) {
             }
         }
         mapDst->set(index, newValue);
-        mapDst->set(getOpposite(index), newValue.conj());
+        //mapDst->set(getOpposite(index), newValue.conj());
         return;
     }
     int loopSize = matrixSizeArray[depth];
