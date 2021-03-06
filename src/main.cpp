@@ -94,7 +94,7 @@ void testSHG() {
     double kappa_a = 1;
     double kappa_b = 1;
     double g=1;
-    int Na = 4;
+    int Na = 2;
     int Nb = 2;
     std::vector<int> Dim = std::vector<int>();
     Dim.push_back(Na);
@@ -113,14 +113,14 @@ void testSHG() {
     RawTerm H2 = {ayaji::Complex(E, 0), H2O};
     std::vector<int> H3O=std::vector<int>();
     std::vector<int> H4O=std::vector<int>();
+    //H3O.push_back(1);H4O.push_back(2);
     H3O.push_back(1);H4O.push_back(2);
-    H3O.push_back(1);H4O.push_back(2);
-    H3O.push_back(3);H4O.push_back(4);
+    H3O.push_back(4);H4O.push_back(3);
     RawTerm H3 = {ayaji::Complex(g,0),H3O};
     RawTerm H4 = {ayaji::Complex(g,0),H4O};
     std::vector<RawTerm> Hamiltonian = std::vector<RawTerm>();
-    Hamiltonian.push_back(H1);
-    Hamiltonian.push_back(H2);
+    //Hamiltonian.push_back(H1);
+    //Hamiltonian.push_back(H2);
     Hamiltonian.push_back(H3);
     Hamiltonian.push_back(H4);
 
@@ -135,7 +135,7 @@ void testSHG() {
     Collapse.push_back(C1);
 
     EpDeriver dataSingle = EpDeriver(Hamiltonian, Collapse, rawIndex);
-    DPSolver dpsolver = DPSolver(Dim, dataSingle, 0.5, 1E-10, 1000);
+    DPSolver dpsolver = DPSolver(Dim, dataSingle, 0.5, 1E-10, 2000);
 
     dpsolver.run();
     MatrixMapper *rowSteadyMatrix = dpsolver.getResult();
@@ -146,7 +146,7 @@ void testSHG() {
     order.push_back(1);
     ayaji::Complex population=rowSteadyMatrix->avgMoment(order);
     
-    std::cout << "Single Mode Test"<<std::endl;
+    std::cout << "Multi Mode Test"<<std::endl;
     std::cout << "Population:"<<population << std::endl;
     std::cout << "DensityMatrix:"<<std::endl;
     std::cout << *steadyMatrix << std::endl;
