@@ -131,6 +131,59 @@ method_MatrixMapperRowRho(PyObject* self, PyObject* args) {
     return cap;
 }
 
+static PyObject*
+method_MatrixMapperAvgMoment(PyObject* self, PyObject* args) {
+    auto argReader = ayaji::PyArgsReader(args);
+    // only accept 2 param
+    if (!argReader.CheckArgsCount(2))
+        Py_RETURN_NONE;
+    auto argMatrixMapper = argReader.GetArg(0);
+    auto argOrder = argReader.GetArg(1);
+
+    auto matrixMapper = static_cast<MatrixMapper*>(
+        PyCapsule_GetPointer(argMatrixMapper, "MatrixMapper"));
+    if (matrixMapper == nullptr) {
+        ayaji::Py_RaiseError(PyExc_TypeError, "Argument should be a MatrixMapper type. Object: %R",
+            argMatrixMapper);
+        Py_RETURN_NONE;
+    }
+
+    auto order = ayaji::PyListToNum<int>(argOrder);
+
+    ayaji::Complex population = matrixMapper->avgMoment(order);
+
+    return PyComplex_FromDoubles(population.getReal(), population.getImage());
+}
+
+static PyObject*
+method_TensorMatrixTo2DList(PyObject* self, PyObject* args) {
+    auto argReader = ayaji::PyArgsReader(args);
+    // only accept 1 param
+    if (!argReader.CheckArgsCount(1))
+        Py_RETURN_NONE;
+    auto argMatrix = argReader.GetArg(0);
+
+    auto matrix = static_cast<TensorMatrix*>(
+        PyCapsule_GetPointer(argMatrix, "TensorMatrix"));
+    if (matrix == nullptr) {
+        ayaji::Py_RaiseError(PyExc_TypeError, "Argument should be a TensorMatrix type. Object: %R",
+            argMatrix);
+        Py_RETURN_NONE;
+    }
+
+    PyObject* ansList = PyList_New(matrix->x);
+    for (size_t i = 0; i < matrix->x; ++i) {
+        PyObject* tmpList = PyList_New(matrix->x);
+        for (size_t j = 0; j < matrix->x; ++j) {
+            ayaji::Complex c = matrix->get(i, j);
+            PyList_SetItem(tmpList, j, PyComplex_FromDoubles(c.getReal(), c.getImage()));
+        }
+        PyList_SetItem(ansList, i, tmpList);
+    }
+
+    return ansList;
+}
+
 /** ------------------------------------------------
  * 
  * * Python core runtime area.
@@ -142,6 +195,9 @@ static PyMethodDef coreMethods[] = {
     {"DPSolver", method_DPSolver, METH_VARARGS, NULL},
     {"DPSolverRun", method_DPSolverRun, METH_VARARGS, NULL},
     {"DPSolverGetResult", method_DPSolverGetResult, METH_VARARGS, NULL},
+    {"MatrixMapperRowRho", method_MatrixMapperRowRho, METH_VARARGS, NULL},
+    {"MatrixMapperAvgMoment", method_MatrixMapperAvgMoment, METH_VARARGS, NULL},
+    {"TensorMatrixTo2DList", method_TensorMatrixTo2DList, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}       /* Sentinel */
 };
 

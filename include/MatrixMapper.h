@@ -309,7 +309,7 @@ public:
             len *= size[i];
         }
         TensorMatrix *ret = new TensorMatrix(len);
-        int *l = reinterpret_cast<int *>(malloc(sizeof(int) * size.size()));
+        int* l = reinterpret_cast<int*>(malloc(sizeof(int) * size.size()));
         rho(ret, 0, l, 0, 0);
         free(l);
         return ret;

@@ -13,6 +13,21 @@
 #include "expression/EpDeriver.h"
 
 namespace ayaji {
+/**
+ * @brief Raise a python error with message. 
+ * 
+ * @tparam Args 
+ * @param errType Python error type, e.g. PyExc_RuntimeError.
+ * @param errFmt 
+ * @param args 
+ */
+template<typename ...Args>
+inline void Py_RaiseError(PyObject* errType, const char* errFmt, Args... args) {
+    if (!PyErr_Occurred()) {
+        PyErr_Format(errType, errFmt, args...);
+    }
+    PyErr_Print();
+}
 
 /**
  * @brief Reader for python args.
@@ -124,43 +139,6 @@ private:
     ListType type;
 };
 
-/**
- * @brief Raise a python error with message. 
- * 
- * @tparam Args 
- * @param errType Python error type, e.g. PyExc_RuntimeError.
- * @param errFmt 
- * @param args 
- */
-template<typename ...Args>
-inline void Py_RaiseError(PyObject* errType, const char* errFmt, Args... args) {
-    if (!PyErr_Occurred()) {
-        PyErr_Format(errType, errFmt, args...);
-    }
-    PyErr_Print();
-}
-
-template<typename T>
-inline T PyObjectTo(PyObject* o) {
-    static_assert("Not implemented yet!");
-}
-template<>
-inline RawTerm PyObjectTo(PyObject* o) {
-    PyListReader reader(o);
-    if (reader.GetSize() != 2) {
-        Py_RaiseError(PyExc_TypeError, "Not a valid RawTerm. Object: %R", o);
-        return RawTerm();
-    }
-    PyObject* t1 = reader.GetItem(0);
-    ayaji::Complex coef = PyObjectToNum<ayaji::Complex>(t1);
-    PyObject* t2 = reader.GetItem(1);
-    std::vector<int> termOp = PyListTo<int>(t2);
-
-    RawTerm ret;
-    ret.coef = coef;
-    ret.termOp = std::move(termOp);
-    return std::move(ret);
-}
 
 /**
  * @brief Convert python object to numeric type.
@@ -179,6 +157,8 @@ inline T PyObjectToNum(PyObject* o) {
         return static_cast<T>(PyLong_AsLong(o));
     } else {
         Py_RaiseError(PyExc_TypeError, "Could not convert to number. Object: %R", o);
+        // Not to reach
+        return T();
     }
 }
 template<>
@@ -191,6 +171,7 @@ inline ayaji::Complex PyObjectToNum(PyObject* o) {
         return ayaji::Complex{PyLong_AsDouble(o)};
     } else {
         Py_RaiseError(PyExc_TypeError, "Could not convert to ayaji::Complex. Object: %R", o);
+        return ayaji::Complex();
     }
 }
 
@@ -204,6 +185,28 @@ inline std::vector<T> PyListToNum(PyObject* o) {
         // PyLong
         ret.push_back(PyObjectToNum<T>(tmp));
     }
+    return std::move(ret);
+}
+
+template<typename T>
+inline T PyObjectTo(PyObject* o) {
+    static_assert("Not implemented yet!");
+}
+template<>
+inline RawTerm PyObjectTo(PyObject* o) {
+    PyListReader reader(o);
+    if (reader.GetSize() != 2) {
+        Py_RaiseError(PyExc_TypeError, "Not a valid RawTerm. Object: %R", o);
+        return RawTerm();
+    }
+    PyObject* t1 = reader.GetItem(0);
+    ayaji::Complex coef = PyObjectToNum<ayaji::Complex>(t1);
+    PyObject* t2 = reader.GetItem(1);
+    std::vector<int> termOp = PyListToNum<int>(t2);
+
+    RawTerm ret;
+    ret.coef = coef;
+    ret.termOp = std::move(termOp);
     return std::move(ret);
 }
 
