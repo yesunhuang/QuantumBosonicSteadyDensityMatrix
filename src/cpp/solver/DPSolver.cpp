@@ -38,9 +38,9 @@ inline ayaji::Complex DPSolver::leftSum(const std::vector<int>& indexArray) {
 }
 
 std::vector<int> DPSolver::getOpposite(std::vector<int> root) {
-    std::vector<int> tmp=std::vector<int> ();
-    for (int i=0;i<root.size();i+=2) {
-        tmp.push_back(root[i+1]);
+    std::vector<int> tmp = std::vector<int>();
+    for (int i = 0; i < root.size(); i += 2) {
+        tmp.push_back(root[i + 1]);
         tmp.push_back(root[i]);
     }
     return tmp;

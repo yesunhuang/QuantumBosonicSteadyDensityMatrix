@@ -290,7 +290,7 @@ public:
      */
     void repair() {
         trace = ayaji::Complex(0, 0);
-        //subRepair(0, 0, 1, -1, true);
+        // subRepair(0, 0, 1, -1, true);
         subRepairTest(0, std::vector<int>());
         // 据说这样会快
         int i;

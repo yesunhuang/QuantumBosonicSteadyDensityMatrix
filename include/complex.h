@@ -30,6 +30,7 @@ namespace ayaji {
 class Complex {
 public:
     Complex();
+    explicit Complex(double real);
     Complex(double real, double image);
     Complex(const Complex& o);
     Complex(Complex&& o) noexcept;

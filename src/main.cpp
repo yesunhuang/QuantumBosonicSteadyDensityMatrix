@@ -141,7 +141,7 @@ void testSHG() {
     MatrixMapper *rowSteadyMatrix = dpsolver.getResult();
     TensorMatrix *steadyMatrix = rowSteadyMatrix->rowRho();
 
-    std::vector<int> order=std::vector<int>();
+    std::vector<int> order = std::vector<int>();
     order.push_back(1);
     order.push_back(1);
     ayaji::Complex population=rowSteadyMatrix->avgMoment(order);

@@ -215,6 +215,8 @@ void Complex::set(double real, double image) {
 // normal precision
 Complex::Complex() : real(0.0), image(0.0) {}
 
+Complex::Complex(double real) : real(real), image(0.0) {}
+
 Complex::Complex(double real, double image) : real(real), image(image) {}
 
 Complex::Complex(const Complex& o) {
@@ -306,7 +308,7 @@ Complex Complex::operator--(int) {
 }
 
 Complex Complex::conj() {
-    Complex tmp=Complex(this->real,-1*this->image);
+    Complex tmp = Complex(this->real, -1 * this->image);
     return tmp;
 }
 
