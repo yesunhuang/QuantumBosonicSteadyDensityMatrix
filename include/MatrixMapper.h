@@ -5,6 +5,7 @@
 
 #ifndef INCLUDE_MATRIXMAPPER_H_
 #define INCLUDE_MATRIXMAPPER_H_
+
 #include <assert.h>
 #include <iostream>
 #include <vector>
@@ -13,7 +14,8 @@
 
 struct TensorMatrix {
     size_t x;
-    ayaji::Complex* data;
+    ayaji::Complex *data;
+
     explicit TensorMatrix(size_t size) {
         x = size;
         data = new ayaji::Complex[x * x];
@@ -29,7 +31,7 @@ struct TensorMatrix {
         return data[_x * x + _y];
     }
 
-    friend inline std::ostream& operator<< (std::ostream &s, const TensorMatrix &matrix) {
+    friend inline std::ostream &operator<<(std::ostream &s, const TensorMatrix &matrix) {
         s << '[';
         for (size_t i = 0; i < matrix.x; ++i) {
             auto xoff = matrix.x * i;
@@ -50,13 +52,13 @@ private:
     std::vector<size_t> off;
     std::vector<size_t> off_op;
     size_t length;
-    ayaji::Complex* data;
+    ayaji::Complex *data;
     bool repaired;
     ayaji::Complex trace;
 
     void rho(TensorMatrix *_rho,
              int length,
-             int* curIndex,
+             int *curIndex,
              int sum_x,
              int sum_y) {
         // 注意：此处不要多线程化，使用了大量非线程安全操作，多线程绝对会出bug
@@ -75,12 +77,12 @@ private:
         }
     }
 
-    void pRho(MatrixMapper& map,
-              const std::vector<int>& mode,
+    void pRho(MatrixMapper &map,
+              const std::vector<int> &mode,
               int depth,
               int curSize,
               int targetSize,
-              int* targetIndex,
+              int *targetIndex,
               ayaji::Complex value) {
         /*
         if(mode[depth] == 0){
@@ -97,7 +99,7 @@ private:
          */
     }
 
-    inline ayaji::Complex get(const int* index) {
+    inline ayaji::Complex get(const int *index) {
         size_t offset = 0;
         for (int i = 0; i < off.size(); i += 2) {
             // 此处不考虑越界情况
@@ -120,7 +122,7 @@ private:
         for (int i = 1; i < size[depth]; ++i) {
             factor *= i;
             subRepair(depth + 1, offset + i * off[depth], mul * factor, i,
-                tra && (depth % 2 == 0 || (ind == i)));
+                      tra && (depth % 2 == 0 || (ind == i)));
         }
     }
 
@@ -129,29 +131,29 @@ private:
      * @param depth
      * @param index
      */
-    void subRepairTest(int depth, std::vector<int> index){
-        if(depth == size.size()){
+    void subRepairTest(int depth, std::vector<int> index) {
+        if (depth == size.size()) {
             int d = 1;
-            for (int i = 0 ; i<index.size();++i){
+            for (int i = 0; i < index.size(); ++i) {
                 int j = 1;
-                for(int k = 2; k < index[i]+1; ++k){
+                for (int k = 2; k < index[i] + 1; ++k) {
                     j *= k;
                 }
                 d *= j;
             }
-            set(index, get(index) * ayaji::Complex(sqrt(d), 0));
+            set(index, get(index) * ayaji::Complex(sqrt(d), 0), false);
             bool trace = true;
-            for(int i = 0; i < index.size(); i += 2){
-                if(index[i] != index[i + 1]){
+            for (int i = 0; i < index.size(); i += 2) {
+                if (index[i] != index[i + 1]) {
                     trace = false;
                     break;
                 }
             }
-            if(trace){
+            if (trace) {
                 this->trace += get(index);
             }
-        }else{
-            for(int i = 0; i < size[depth]; ++i){
+        } else {
+            for (int i = 0; i < size[depth]; ++i) {
                 std::vector<int> ind2 = index;
                 ind2.push_back(i);
                 subRepairTest(depth + 1, ind2);
@@ -159,8 +161,8 @@ private:
         }
     }
 
-    inline ayaji::Complex doAvgMoment(int* index,
-        const std::vector<int> &order, int depth, int mul) {
+    inline ayaji::Complex doAvgMoment(int *index,
+                                      const std::vector<int> &order, int depth, int mul) {
         if (depth == size.size()) {
             return ayaji::Complex(mul, 0) * get(index);
         }
@@ -217,11 +219,11 @@ public:
      * 返回对应位置上的元素值
      * 若任意坐标出现越界此方法应返回 0
      **/
-    inline ayaji::Complex get(const std::vector<int>& list) {
+    inline ayaji::Complex get(const std::vector<int> &list) {
         size_t offset = 0;
         for (int i = 0; i < list.size(); i += 2) {
             if (size[i] <= list[i] || size[i + 1] <= list[i + 1]
-                ||  list[i]<0   ||  list[i+1]<0)
+                || list[i] < 0 || list[i + 1] < 0)
                 return ayaji::Complex(0, 0);
             offset += off[i] * list[i] + off[i + 1] * list[i + 1];
         }
@@ -238,13 +240,20 @@ public:
      * @param list 坐标列表
      * @param value 将要设定的值
      */
-    void set(const std::vector<int>& list, ayaji::Complex value) {
+    inline void set(const std::vector<int> &list, ayaji::Complex value) {
+        set(list, value, true);
+    }
+
+    void set(const std::vector<int> &list, ayaji::Complex value, bool checkZero) {
         size_t offset = 0;
         for (int i = 0; i < list.size(); i += 2) {
             if (size[i] <= list[i] || size[i + 1] <= list[i + 1]
-                ||  list[i]<0   ||  list[i+1]<0)
+                || list[i] < 0 || list[i + 1] < 0)
                 return;
             offset += off[i] * list[i] + off[i + 1] * list[i + 1];
+        }
+        if (!offset && checkZero) {
+            return;
         }
         set(offset, value);
     }
@@ -281,8 +290,8 @@ public:
         for (int i = 0; i < size.size(); i += 2) {
             len *= size[i];
         }
-        TensorMatrix *ret= new TensorMatrix(len);
-        int* l = reinterpret_cast<int*>(malloc(sizeof(int) * size.size()));
+        TensorMatrix *ret = new TensorMatrix(len);
+        int *l = reinterpret_cast<int *>(malloc(sizeof(int) * size.size()));
         rho(ret, 0, l, 0, 0);
         free(l);
         return ret;
@@ -302,13 +311,13 @@ public:
             repair();
             repaired = true;
         }
-        int* index = reinterpret_cast<int*>(malloc(sizeof(int) * size.size()));
+        int *index = reinterpret_cast<int *>(malloc(sizeof(int) * size.size()));
         auto ret = doAvgMoment(index, order, 0, 1);
         free(index);
         return ret;
     }
 
-    inline size_t getLength(){
+    inline size_t getLength() {
         return length;
     }
 };
