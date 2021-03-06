@@ -220,12 +220,14 @@ public:
         this->data = new ayaji::Complex[length];
         int i = 0;
         ayaji::Complex init(static_cast<double>(1.0) / offset, 0);
+        
         /*
         for (i = 0; i < length; ++i) {
             data[i] = init;
         }
          */
-        _init(std::vector<int>(), init);
+        data[0]=ayaji::Complex(1,0);
+        //_init(std::vector<int>(), init);
     }
 
     ~MatrixMapper() { delete[] data; }

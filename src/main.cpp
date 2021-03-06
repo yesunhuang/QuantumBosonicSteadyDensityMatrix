@@ -93,7 +93,7 @@ void testSHG() {
     double E = 0.4;
     double kappa_a = 1;
     double kappa_b = 1;
-    double g=1;
+    double g= 0.4;
     int Na = 2;
     int Nb = 2;
     std::vector<int> Dim = std::vector<int>();
@@ -113,8 +113,8 @@ void testSHG() {
     RawTerm H2 = {ayaji::Complex(E, 0), H2O};
     std::vector<int> H3O=std::vector<int>();
     std::vector<int> H4O=std::vector<int>();
-    //H3O.push_back(1);H4O.push_back(2);
     H3O.push_back(1);H4O.push_back(2);
+    //H3O.push_back(1);H4O.push_back(2);
     H3O.push_back(4);H4O.push_back(3);
     RawTerm H3 = {ayaji::Complex(g,0),H3O};
     RawTerm H4 = {ayaji::Complex(g,0),H4O};
@@ -153,8 +153,8 @@ void testSHG() {
 }
 
 int main() {
-    //testSimplest();
-    //testSingleMode();
+    testSimplest();
+    testSingleMode();
     testSHG();
     return 0;
 }

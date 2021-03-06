@@ -62,15 +62,15 @@ void DPSolver::doRun(int depth, const std::vector<int>& index) {
             }
         }
         mapDst->set(index, newValue);
-        //mapDst->set(getOpposite(index), newValue.conj());
+        mapDst->set(getOpposite(index), newValue.conj());
         return;
     }
     int loopSize = matrixSizeArray[depth];
     // 主循环体
     // 所有数据都是从mapSrc读取写入到mapDst，故不会出现读写访问冲突，不加锁
-#pragma omp parallel for
+//#pragma omp parallel for
     for (int i = 0; i < loopSize; ++i) {
-        for (int j = 0; j <= loopSize; ++j) {
+        for (int j = 0; j < loopSize; ++j) {
             auto nInd = std::vector<int>(index);
             nInd.push_back(i);
             nInd.push_back(j);
