@@ -119,8 +119,8 @@ void testSHG() {
     RawTerm H3 = {ayaji::Complex(g,0),H3O};
     RawTerm H4 = {ayaji::Complex(g,0),H4O};
     std::vector<RawTerm> Hamiltonian = std::vector<RawTerm>();
-    //Hamiltonian.push_back(H1);
-    //Hamiltonian.push_back(H2);
+    Hamiltonian.push_back(H1);
+    Hamiltonian.push_back(H2);
     Hamiltonian.push_back(H3);
     Hamiltonian.push_back(H4);
 
@@ -135,7 +135,7 @@ void testSHG() {
     Collapse.push_back(C1);
 
     EpDeriver dataSingle = EpDeriver(Hamiltonian, Collapse, rawIndex);
-    DPSolver dpsolver = DPSolver(Dim, dataSingle, 0.5, 1E-10, 2000);
+    DPSolver dpsolver = DPSolver(Dim, dataSingle, 0.5, 1E-10, 1000);
 
     dpsolver.run();
     MatrixMapper *rowSteadyMatrix = dpsolver.getResult();
@@ -154,7 +154,7 @@ void testSHG() {
 
 int main() {
     //testSimplest();
-    testSingleMode();
+    //testSingleMode();
     testSHG();
     return 0;
 }
