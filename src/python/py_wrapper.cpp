@@ -4,18 +4,18 @@
 #define PY_SSIZE_T_CLEAN
 
 #include "Python.h"
-#include "python-utils/utils.h"
 #include "expression/EpDeriver.h"
+#include "python-utils/utils.h"
 #include "solver/DPSolver.h"
 
 /** ------------------------------------------------
- * 
+ *
  * * Python method area.
- * 
+ *
  --------------------------------------------------*/
 
-static PyObject*
-method_EpDeriver(PyObject* self, PyObject* args) {
+static PyObject *method_EpDeriver(PyObject *self, PyObject *args) {
+    ayaji::Py_DEBUG("Enter method_EpDeriver...\n");
     auto argReader = ayaji::PyArgsReader(args);
     // only accept 3 param
     if (!argReader.CheckArgsCount(3))
@@ -28,17 +28,22 @@ method_EpDeriver(PyObject* self, PyObject* args) {
     auto cols = ayaji::PyListTo<RawTerm>(argCols);
     auto idxs = ayaji::PyListToNum<int>(argIdxs);
 
-    EpDeriver* deriver = new EpDeriver(hams, cols, idxs);
-    PyObject* cap = PyCapsule_New(deriver, "EpDeriver", [](PyObject* capsule) {
-        EpDeriver* d = static_cast<EpDeriver*>(PyCapsule_GetPointer(capsule, "EpDeriver"));
+    ayaji::Py_DEBUG("Preprocessed arguments...\n");
+
+    EpDeriver *deriver = new EpDeriver(hams, cols, idxs);
+    PyObject *cap = PyCapsule_New(deriver, "EpDeriver", [](PyObject *capsule) {
+        EpDeriver *d = static_cast<EpDeriver *>(
+            PyCapsule_GetPointer(capsule, "EpDeriver"));
         delete d;
     });
+
+    ayaji::Py_DEBUG("Leave method_EpDeriver...\n");
 
     return cap;
 }
 
-static PyObject*
-method_DPSolver(PyObject* self, PyObject* args) {
+static PyObject *method_DPSolver(PyObject *self, PyObject *args) {
+    ayaji::Py_DEBUG("Enter method_DPSolver...\n");
     auto argReader = ayaji::PyArgsReader(args);
     // only accept 5 param
     if (!argReader.CheckArgsCount(5))
@@ -50,89 +55,111 @@ method_DPSolver(PyObject* self, PyObject* args) {
     auto argMaxRetTime = argReader.GetArg(4);
 
     auto Dim = ayaji::PyListToNum<int>(argDim);
-    auto epDeriver = static_cast<EpDeriver*>(PyCapsule_GetPointer(argEpDeriver, "EpDeriver"));
+    auto epDeriver = static_cast<EpDeriver *>(
+        PyCapsule_GetPointer(argEpDeriver, "EpDeriver"));
     if (epDeriver == nullptr) {
-        ayaji::Py_RaiseError(PyExc_TypeError, "Argument should be a EpDeriver type. Object: %R",
-            argEpDeriver);
+        ayaji::Py_RaiseError(PyExc_TypeError,
+                             "Argument should be a EpDeriver type. Object: %R",
+                             argEpDeriver);
         Py_RETURN_NONE;
     }
     auto alpha = ayaji::PyObjectToNum<double>(argAlpha);
     auto eps = ayaji::PyObjectToNum<double>(argEps);
     auto maxRetTime = ayaji::PyObjectToNum<size_t>(argMaxRetTime);
 
-    DPSolver* dpSolver = new DPSolver(Dim, *epDeriver, alpha, eps, maxRetTime);
-    PyObject* cap = PyCapsule_New(dpSolver, "DPSolver", [](PyObject* capsule) {
-        DPSolver* d = static_cast<DPSolver*>(PyCapsule_GetPointer(capsule, "DPSolver"));
+    ayaji::Py_DEBUG("Preprocessed arguments...\n");
+
+    DPSolver *dpSolver = new DPSolver(Dim, *epDeriver, alpha, eps, maxRetTime);
+    PyObject *cap = PyCapsule_New(dpSolver, "DPSolver", [](PyObject *capsule) {
+        DPSolver *d =
+            static_cast<DPSolver *>(PyCapsule_GetPointer(capsule, "DPSolver"));
         delete d;
     });
 
+    ayaji::Py_DEBUG("Leave method_DPSolver...\n");
+
     return cap;
 }
 
-static PyObject*
-method_DPSolverRun(PyObject* self, PyObject* args) {
+static PyObject *method_DPSolverRun(PyObject *self, PyObject *args) {
+    ayaji::Py_DEBUG("Enter method_DPSolverRun...\n");
     auto argReader = ayaji::PyArgsReader(args);
     // only accept 1 param
     if (!argReader.CheckArgsCount(1))
         Py_RETURN_NONE;
     auto argDpSolver = argReader.GetArg(0);
 
-    auto dpSolver = static_cast<DPSolver*>(PyCapsule_GetPointer(argDpSolver, "DPSolver"));
+    auto dpSolver =
+        static_cast<DPSolver *>(PyCapsule_GetPointer(argDpSolver, "DPSolver"));
     if (dpSolver == nullptr) {
-        ayaji::Py_RaiseError(PyExc_TypeError, "Argument should be a DPSolver type. Object: %R",
-            argDpSolver);
+        ayaji::Py_RaiseError(PyExc_TypeError,
+                             "Argument should be a DPSolver type. Object: %R",
+                             argDpSolver);
         Py_RETURN_NONE;
     }
 
+    ayaji::Py_DEBUG("Preprocessed arguments...\n");
+
     dpSolver->run();
+    ayaji::Py_DEBUG("Leave method_DPSolverRun...\n");
     Py_RETURN_NONE;
 }
 
-static PyObject*
-method_DPSolverGetResult(PyObject* self, PyObject* args) {
+static PyObject *method_DPSolverGetResult(PyObject *self, PyObject *args) {
+    ayaji::Py_DEBUG("Enter method_DPSolverGetResult...\n");
     auto argReader = ayaji::PyArgsReader(args);
     // only accept 1 param
     if (!argReader.CheckArgsCount(1))
         Py_RETURN_NONE;
     auto argDpSolver = argReader.GetArg(0);
 
-    auto dpSolver = static_cast<DPSolver*>(PyCapsule_GetPointer(argDpSolver, "DPSolver"));
+    auto dpSolver =
+        static_cast<DPSolver *>(PyCapsule_GetPointer(argDpSolver, "DPSolver"));
     if (dpSolver == nullptr) {
-        ayaji::Py_RaiseError(PyExc_TypeError, "Argument should be a DPSolver type. Object: %R",
-            argDpSolver);
+        ayaji::Py_RaiseError(PyExc_TypeError,
+                             "Argument should be a DPSolver type. Object: %R",
+                             argDpSolver);
         Py_RETURN_NONE;
     }
 
-    MatrixMapper* mapper = dpSolver->getResult();
-    PyObject* cap = PyCapsule_New(mapper, "MatrixMapper", nullptr);
+    ayaji::Py_DEBUG("Preprocessed arguments...\n");
 
+    MatrixMapper *mapper = dpSolver->getResult();
+    PyObject *cap = PyCapsule_New(mapper, "MatrixMapper", nullptr);
+
+    ayaji::Py_DEBUG("Leave method_DPSolverGetResult...\n");
     return cap;
 }
 
-static PyObject*
-method_MatrixMapperRowRho(PyObject* self, PyObject* args) {
+static PyObject *method_MatrixMapperRowRho(PyObject *self, PyObject *args) {
+    ayaji::Py_DEBUG("Enter method_MatrixMapperRowRho...\n");
     auto argReader = ayaji::PyArgsReader(args);
     // only accept 1 param
     if (!argReader.CheckArgsCount(1))
         Py_RETURN_NONE;
     auto argMatrixMapper = argReader.GetArg(0);
 
-    auto matrixMapper = static_cast<MatrixMapper*>(
+    auto matrixMapper = static_cast<MatrixMapper *>(
         PyCapsule_GetPointer(argMatrixMapper, "MatrixMapper"));
     if (matrixMapper == nullptr) {
-        ayaji::Py_RaiseError(PyExc_TypeError, "Argument should be a MatrixMapper type. Object: %R",
+        ayaji::Py_RaiseError(
+            PyExc_TypeError,
+            "Argument should be a MatrixMapper type. Object: %R",
             argMatrixMapper);
         Py_RETURN_NONE;
     }
 
-    TensorMatrix* matrix = matrixMapper->rowRho();
-    PyObject* cap = PyCapsule_New(matrix, "TensorMatrix", nullptr);
+    ayaji::Py_DEBUG("Preprocessed arguments...\n");
 
+    TensorMatrix *matrix = matrixMapper->rowRho();
+    PyObject *cap = PyCapsule_New(matrix, "TensorMatrix", nullptr);
+
+    ayaji::Py_DEBUG("Leave method_MatrixMapperRowRho...\n");
     return cap;
 }
 
-static PyObject*
-method_MatrixMapperAvgMoment(PyObject* self, PyObject* args) {
+static PyObject *method_MatrixMapperAvgMoment(PyObject *self, PyObject *args) {
+    ayaji::Py_DEBUG("Enter method_MatrixMapperAvgMoment...\n");
     auto argReader = ayaji::PyArgsReader(args);
     // only accept 2 param
     if (!argReader.CheckArgsCount(2))
@@ -140,54 +167,64 @@ method_MatrixMapperAvgMoment(PyObject* self, PyObject* args) {
     auto argMatrixMapper = argReader.GetArg(0);
     auto argOrder = argReader.GetArg(1);
 
-    auto matrixMapper = static_cast<MatrixMapper*>(
+    auto matrixMapper = static_cast<MatrixMapper *>(
         PyCapsule_GetPointer(argMatrixMapper, "MatrixMapper"));
     if (matrixMapper == nullptr) {
-        ayaji::Py_RaiseError(PyExc_TypeError, "Argument should be a MatrixMapper type. Object: %R",
+        ayaji::Py_RaiseError(
+            PyExc_TypeError,
+            "Argument should be a MatrixMapper type. Object: %R",
             argMatrixMapper);
         Py_RETURN_NONE;
     }
 
     auto order = ayaji::PyListToNum<int>(argOrder);
 
+    ayaji::Py_DEBUG("Preprocessed arguments...\n");
+
     ayaji::Complex population = matrixMapper->avgMoment(order);
 
+    ayaji::Py_DEBUG("Leave method_MatrixMapperAvgMoment...\n");
     return PyComplex_FromDoubles(population.getReal(), population.getImage());
 }
 
-static PyObject*
-method_TensorMatrixTo2DList(PyObject* self, PyObject* args) {
+static PyObject *method_TensorMatrixTo2DList(PyObject *self, PyObject *args) {
+    ayaji::Py_DEBUG("Enter method_TensorMatrixTo2DList...\n");
     auto argReader = ayaji::PyArgsReader(args);
     // only accept 1 param
     if (!argReader.CheckArgsCount(1))
         Py_RETURN_NONE;
     auto argMatrix = argReader.GetArg(0);
 
-    auto matrix = static_cast<TensorMatrix*>(
+    auto matrix = static_cast<TensorMatrix *>(
         PyCapsule_GetPointer(argMatrix, "TensorMatrix"));
     if (matrix == nullptr) {
-        ayaji::Py_RaiseError(PyExc_TypeError, "Argument should be a TensorMatrix type. Object: %R",
-            argMatrix);
+        ayaji::Py_RaiseError(
+            PyExc_TypeError,
+            "Argument should be a TensorMatrix type. Object: %R", argMatrix);
         Py_RETURN_NONE;
     }
 
-    PyObject* ansList = PyList_New(matrix->x);
+    ayaji::Py_DEBUG("Preprocessed arguments...\n");
+
+    PyObject *ansList = PyList_New(matrix->x);
     for (size_t i = 0; i < matrix->x; ++i) {
-        PyObject* tmpList = PyList_New(matrix->x);
+        PyObject *tmpList = PyList_New(matrix->x);
         for (size_t j = 0; j < matrix->x; ++j) {
             ayaji::Complex c = matrix->get(i, j);
-            PyList_SetItem(tmpList, j, PyComplex_FromDoubles(c.getReal(), c.getImage()));
+            PyList_SetItem(tmpList, j,
+                           PyComplex_FromDoubles(c.getReal(), c.getImage()));
         }
         PyList_SetItem(ansList, i, tmpList);
     }
 
+    ayaji::Py_DEBUG("Leave method_TensorMatrixTo2DList...\n");
     return ansList;
 }
 
 /** ------------------------------------------------
- * 
+ *
  * * Python core runtime area.
- * 
+ *
  --------------------------------------------------*/
 
 static PyMethodDef coreMethods[] = {
@@ -198,21 +235,16 @@ static PyMethodDef coreMethods[] = {
     {"MatrixMapperRowRho", method_MatrixMapperRowRho, METH_VARARGS, NULL},
     {"MatrixMapperAvgMoment", method_MatrixMapperAvgMoment, METH_VARARGS, NULL},
     {"TensorMatrixTo2DList", method_TensorMatrixTo2DList, METH_VARARGS, NULL},
-    {NULL, NULL, 0, NULL}       /* Sentinel */
+    {NULL, NULL, 0, NULL} /* Sentinel */
 };
 
 static struct PyModuleDef coreModule = {
-    PyModuleDef_HEAD_INIT,
-    "core",                         /* name of module */
+    PyModuleDef_HEAD_INIT, "core", /* name of module */
     /* module documentation, may be NULL */
-    "The core module to solve steady density matrix problem for bosonic quantum system.",
+    "The core module to solve steady density matrix problem for bosonic "
+    "quantum system.",
     /* size of per-interpreter state of the module or -1
         if the module keeps state in global variables. */
-    -1,
-    coreMethods
-};
+    -1, coreMethods};
 
-PyMODINIT_FUNC
-PyInit_core(void) {
-    return PyModule_Create(&coreModule);
-}
+PyMODINIT_FUNC PyInit_core(void) { return PyModule_Create(&coreModule); }

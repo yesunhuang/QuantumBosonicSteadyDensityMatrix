@@ -35,6 +35,14 @@ python setup.py bdist
 
 ## 使用方法
 
+### 安装依赖
+
+目前使用 setuptools 和 attrs 库，使用下列命令安装依赖:
+
+```
+pip install -r requirements.txt
+```
+
 ### 本机安装
 
 使用命令将 bostix 安装到本机中的 site-packages 中:
@@ -62,7 +70,7 @@ from bostix import core
 目前 core 中的方法，几乎是对 C++ 中原生函数的直接封装:
 
 * **EpSolver**: EpSolver 的构造函数，接受 3 个参数: 前 2 个为 [RawTerm](#raw_term) 的 List，第 3 个为整数的 List。返回值为 EpSolver* 的封装对象。
-* **DPSolver**: DPSolver 的构造函数，接受 5 个参数: 
+* **DPSolver**: DPSolver 的构造函数，接受 5 个参数: 累了，自己看源码
 * **DPSolverRun**: DPSolver 的 run 方法，接受 1 个参数，即 DPSolver* 的封装对象。
 * **DPSolverGetResult**: DPSolver 的 getResult 方法，接受 1 个参数，即 DPSolver* 的封装对象。返回值为 MatrixMapper* 的封装对象。
 * **MatrixMapperRowRho**: MatrixMapper 的 rowRho 方法，接受 1 个参数，即 MatrixMapper* 的封装对象。返回值为 TensorMatrix* 的封装对象。
@@ -85,6 +93,14 @@ mat = core.MatrixMapperRowRho(result)
 # print 2d tensor matrix
 print(core.TensorMatrixTo2DList(mat))
 ```
+
+### debug 方法
+
+在 setup.py 中，取消宏定义 `("_DEBUG", None)` 的注释。
+
+## Python 包皮
+
+见 bostix/solver 底部的用例
 
 ## 附录
 
