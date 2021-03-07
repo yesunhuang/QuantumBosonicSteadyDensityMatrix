@@ -1,6 +1,6 @@
 from setuptools import setup, Extension
 
-longdes = open("README.md")
+longdes = open("README.md",encoding="utf-8")
 
 module1 = Extension(
     "bostix.core",
@@ -29,7 +29,7 @@ setup(
     author_email="yesunhuang@mail.ustc.edu.cn",
     maintainer="YesunHuang & Guch8017 & AyajiLin",
     url="https://github.com/yesunhuang/QuantumBosonicSteadyDensityMatrix",
-    install_requires=["attrs"]
+    install_requires=["attrs"],
     packages=["bostix"],
     ext_modules=[module1],
     classifiers=[
