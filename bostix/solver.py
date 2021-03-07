@@ -68,8 +68,28 @@ class DPSolver(SolverBase):
 
 
 if __name__ == "__main__":
+    print("Decay Test:")
     a = DPSolver(dim=[4], ham=[], col=[(1, "a")])
     print(a)
-    matrix_mapper = a.solve(10, 1e-10, alpha=0.5)
+    matrix_mapper = a.solve(1000, 1e-5, alpha=0.5)
     print(matrix_mapper.row_rho().as_2d_list())
     print(matrix_mapper.avg_moment([1]))
+
+    print("Single Mode Pump test:")
+    E=0.2
+    delta=0.5
+    a = DPSolver(dim=[3], ham=[(E,"a"),(E,"A"),(delta,"Aa")], col=[(1, "a")])
+    print(a)
+    matrix_mapper = a.solve(1000, 1e-5, alpha=0.5)
+    print(matrix_mapper.row_rho().as_2d_list())
+    print(matrix_mapper.avg_moment([2]))
+
+    print("Decay Rabi Pump test:")
+    g=0.4
+    E=0.4
+    a = DPSolver(dim=[2,2], ham=[(E,"a"),(E,"A"),(g,"aB"),(g,"Ab")], col=[(1, "a"),(1,'b')])
+    print(a)
+    matrix_mapper = a.solve(1000, 1e-10, alpha=0.5)
+    print(matrix_mapper.row_rho().as_2d_list())
+    print(matrix_mapper.avg_moment([1,1]))
+
