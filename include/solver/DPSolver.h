@@ -22,8 +22,8 @@ private:
     /**
      * 超参数
      */
-    const ayaji::Complex alpha;
-    const ayaji::Complex minusAlpha;  // 1 - alpha
+    const double alpha;
+    const double minusAlpha;  // 1 - alpha
     const double epsilon;
     const int maxRecurveTimes;
 
@@ -84,8 +84,8 @@ public:
         : matrixSizeArray(matrixSize),
           mapper(epDeriver.neighbourIndexes),
           epd(epDeriver),
-          alpha(ayaji::Complex(alpha, 0)),
-          minusAlpha(ayaji::Complex(1 - alpha, 0)),
+          alpha(alpha),
+          minusAlpha(1 - alpha),
           epsilon(epsilon),
           maxRecurveTimes(maxRetTime) {
 #ifdef DEBUG

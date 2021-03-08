@@ -40,10 +40,22 @@ public:
     Complex operator-(const Complex& o) const;
     Complex operator*(const Complex& o) const;
     Complex operator/(const Complex& o) const;
+
+    Complex operator+(const double o) const;
+    Complex operator-(const double o) const;
+    Complex operator*(const double o) const;
+    Complex operator/(const double o) const;
+
     Complex& operator+=(const Complex& o);
     Complex& operator-=(const Complex& o);
     Complex& operator*=(const Complex& o);
     Complex& operator/=(const Complex& o);
+
+    Complex& operator+=(const double o);
+    Complex& operator-=(const double o);
+    Complex& operator*=(const double o);
+    Complex& operator/=(const double o);
+
     Complex& operator++();
     Complex& operator--();
     Complex operator++(int);
@@ -79,7 +91,12 @@ private:
     double image;
 #endif  // HIGH_PRECISION
 };
-
+#ifndef HIGH_PRECISION
+    Complex operator+(const double lhs, const Complex &rhs);
+    Complex operator-(const double lhs, const Complex &rhs);
+    Complex operator*(const double lhs, const Complex &rhs);
+    Complex operator/(const double lhs, const Complex &rhs);
+#endif
 }  // namespace ayaji
 
 #endif
