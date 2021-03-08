@@ -1,4 +1,4 @@
-from setuptools import setup, Extension
+from setuptools import setup, Extension, find_packages
 
 longdes = open("README.md")
 
@@ -29,8 +29,8 @@ setup(
     author_email="yesunhuang@mail.ustc.edu.cn",
     maintainer="YesunHuang & Guch8017 & AyajiLin",
     url="https://github.com/yesunhuang/QuantumBosonicSteadyDensityMatrix",
-    install_requires=["attrs"]
-    packages=["bostix"],
+    install_requires=["attrs"],
+    packages=find_packages(),
     ext_modules=[module1],
     classifiers=[
         "Development Status :: 3 - Alpha",

@@ -54,7 +54,7 @@ def alpha_to_numeric(alpha: str) -> List[int]:
     for letter in alpha:
         c = ord(letter)
         if c >= ord("A") and c <= ord("Z"):
-            ret.append(c - ord("A") + 1)
+            ret.append((c - ord("A")) * 2 + 1)
         else:
             ret.append((c - ord("a") + 1) * 2)
     return ret

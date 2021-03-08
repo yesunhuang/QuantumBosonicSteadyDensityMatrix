@@ -98,9 +98,13 @@ print(core.TensorMatrixTo2DList(mat))
 
 在 setup.py 中，取消宏定义 `("_DEBUG", None)` 的注释。
 
+### test
+
+直接运行 `test/test.py` 即可
+
 ## Python 包皮
 
-见 bostix/solver 底部的用例
+见 test/test.py 中的用例
 
 ## 附录
 
