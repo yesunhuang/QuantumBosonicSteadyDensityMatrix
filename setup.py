@@ -1,6 +1,6 @@
 from setuptools import setup, Extension, find_packages
 
-longdes = open("README.md")
+longdes = open("README.md",encoding="utf-8")
 
 module1 = Extension(
     "bostix.core",
