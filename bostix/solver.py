@@ -2,9 +2,15 @@ from abc import ABCMeta, abstractmethod
 from typing import Any, List, Tuple, Union
 
 import attr
-from matrix.mapper import MatrixMapper
-from matrix.tensor import TensorMatrix
-from utils.form import alpha_to_numeric
+
+try:
+    from .matrix.mapper import MatrixMapper
+    from .matrix.tensor import TensorMatrix
+    from .utils.form import alpha_to_numeric
+except:
+    from matrix.mapper import MatrixMapper
+    from matrix.tensor import TensorMatrix
+    from utils.form import alpha_to_numeric
 
 from bostix import core
 
@@ -66,7 +72,6 @@ class DPSolver(SolverBase):
         core.DPSolverRun(self._dp_deriver)
         return MatrixMapper(raw_mapper=core.DPSolverGetResult(self._dp_deriver))
 
-
 if __name__ == "__main__":
     print("Decay Test:")
     a = DPSolver(dim=[4], ham=[], col=[(1, "a")])
@@ -92,4 +97,5 @@ if __name__ == "__main__":
     matrix_mapper = a.solve(1000, 1e-10, alpha=0.5)
     print(matrix_mapper.row_rho().as_2d_list())
     print(matrix_mapper.avg_moment([1,1]))
+
 
