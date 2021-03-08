@@ -176,6 +176,11 @@ private:
         return ret;
     }
 
+    /**
+     * 备用的初始化函数，仅沿对角线初始
+     * @param index 外部调用应传入一空的vector
+     * @param value 传入 1 / length
+     */
     void _init(std::vector<int> index, ayaji::Complex value){
         if(index.size() == size.size()){
             set(index, value, false);
@@ -220,7 +225,7 @@ public:
         this->data = new ayaji::Complex[length];
         int i = 0;
         ayaji::Complex init(static_cast<double>(1.0) / offset, 0);
-        
+
         /*
         for (i = 0; i < length; ++i) {
             data[i] = init;
@@ -290,8 +295,8 @@ public:
      */
     void repair() {
         trace = ayaji::Complex(0, 0);
-        // subRepair(0, 0, 1, -1, true);
-        subRepairTest(0, std::vector<int>());
+        subRepair(0, 0, 1, -1, true);
+        //subRepairTest(0, std::vector<int>());
         // 据说这样会快
         int i;
         for (i = 0; i < length; ++i) {
@@ -309,7 +314,7 @@ public:
             len *= size[i];
         }
         TensorMatrix *ret = new TensorMatrix(len);
-        int* l = reinterpret_cast<int*>(malloc(sizeof(int) * size.size()));
+        int *l = reinterpret_cast<int *>(malloc(sizeof(int) * size.size()));
         rho(ret, 0, l, 0, 0);
         free(l);
         return ret;
