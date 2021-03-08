@@ -112,10 +112,10 @@ void EpDeriver::buildCollapseEps() {
 
 ayaji::Complex EpDeriver::calEp(const std::vector<Term>& expression,
                                 const std::vector<int>& index) {
-    ayaji::Complex result = ayaji::Complex();
+    ayaji::Complex result;
     // 遍历表达式
     for (auto term = expression.cbegin(); term != expression.cend(); term++) {
-        ayaji::Complex termVal = ayaji::Complex();
+        ayaji::Complex termVal;
         termVal += ((*(*term).coef) * (*term).coefFactor);
         double realTermVal = 1;
         // 遍历当前项中的不同因子
@@ -129,7 +129,7 @@ ayaji::Complex EpDeriver::calEp(const std::vector<Term>& expression,
             for (int i = col - (*factor).ket+1;  i <= col ; i++)
                 realTermVal *= i;
         }
-        termVal *= ayaji::Complex(realTermVal, 0);
+        termVal *= realTermVal;
         result += termVal;
     }
     return result;
