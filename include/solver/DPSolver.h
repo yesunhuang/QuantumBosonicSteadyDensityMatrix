@@ -46,6 +46,7 @@ private:
      * 注意此处的邻居对应的index应与function一一对应
      */
     std::vector<std::vector<int>> mapper;
+    std::vector<int> absoluteOffset;
 
     MatrixMapper* mapSrc;
     MatrixMapper* mapDst;
@@ -73,7 +74,7 @@ private:
 
     void doRun(int depth, const std::vector<int>& index);
 
-    std::vector<int> getOpposite(std::vector<int> root);
+    std::vector<int> getOpposite(const std::vector<int>& root);
 
 public:
     DPSolver(const std::vector<int> &matrixSize,
@@ -94,6 +95,9 @@ public:
 #endif
         mapSrc = new MatrixMapper(matrixSize);
         mapDst = new MatrixMapper(matrixSize);
+        for(auto map: mapper){
+            absoluteOffset.push_back(mapSrc->getOffset(map));
+        }
     }
 
     ~DPSolver() {

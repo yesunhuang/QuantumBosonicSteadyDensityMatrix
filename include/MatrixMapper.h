@@ -56,6 +56,14 @@ private:
     bool repaired;
     ayaji::Complex trace;
 
+    /**
+     * 生成张量的辅助函数
+     * @param _rho
+     * @param length
+     * @param curIndex
+     * @param sum_x
+     * @param sum_y
+     */
     void rho(TensorMatrix *_rho,
              int length,
              int *curIndex,
@@ -77,6 +85,16 @@ private:
         }
     }
 
+    /**
+     * [Unfinished] 辅助函数
+     * @param map
+     * @param mode
+     * @param depth
+     * @param curSize
+     * @param targetSize
+     * @param targetIndex
+     * @param value
+     */
     void pRho(MatrixMapper &map,
               const std::vector<int> &mode,
               int depth,
@@ -99,6 +117,11 @@ private:
          */
     }
 
+    /**
+     * 获取对应坐标的值
+     * @param index 坐标列表
+     * @return
+     */
     inline ayaji::Complex get(const int *index) {
         size_t offset = 0;
         for (int i = 0; i < off.size(); i += 2) {
@@ -108,6 +131,14 @@ private:
         return get(offset);
     }
 
+    /**
+     * 还原归一化条件
+     * @param depth
+     * @param offset
+     * @param mul
+     * @param ind
+     * @param tra
+     */
     // TODO: 此处仅用double存储阶乘值，可能发生上溢出，如果有需要可改为 unsigned long long 或者 double
     void subRepair(int depth, int offset, int mul, int ind, bool tra) {
         if (depth == size.size()) {
@@ -127,7 +158,7 @@ private:
     }
 
     /**
-     * 暴力算法，先保证不出bug
+     * [Deparated] 暴力还原
      * @param depth
      * @param index
      */
@@ -161,6 +192,14 @@ private:
         }
     }
 
+    /**
+     * 计算模式均值矩的辅助函数
+     * @param index
+     * @param order
+     * @param depth
+     * @param mul
+     * @return
+     */
     inline ayaji::Complex doAvgMoment(int *index,
                                       const std::vector<int> &order, int depth, int mul) {
         if (depth == size.size()) {
@@ -253,6 +292,19 @@ public:
         return get(offset);
     }
 
+    inline ayaji::Complex get(int offset, const std::vector<int> &list){
+        for (int i = 0; i < list.size(); i += 2) {
+            if (size[i] <= list[i] || size[i + 1] <= list[i + 1] || list[i] < 0 || list[i + 1] < 0)
+                return ayaji::Complex();
+        }
+        return get(offset);
+    }
+
+    /**
+     * 由坐标偏移获取偏移
+     * @param offset
+     * @return
+     */
     inline ayaji::Complex get(size_t offset) {
         assert(offset < length && "Index out of range");
         return data[offset];
@@ -342,6 +394,19 @@ public:
 
     inline size_t getLength() {
         return length;
+    }
+
+    /**
+     * 根据给出的坐标列表返回偏移值
+     * @param list 坐标
+     * @return 偏移值
+     */
+    inline int getOffset(const std::vector<int> &list) {
+        int offset = 0;
+        for (int i = 0; i < list.size(); i += 2) {
+            offset += off[i] * list[i] + off[i + 1] * list[i + 1];
+        }
+        return offset;
     }
 };
 
