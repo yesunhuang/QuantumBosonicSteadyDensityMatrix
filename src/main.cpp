@@ -80,7 +80,7 @@ void testSimplest()
     TensorMatrix *steadyMatrix = rowSteadyMatrix->rowRho();
 
     std::vector<int> order=std::vector<int>();
-    order.push_back(1);
+    order.push_back(0);
     ayaji::Complex population=rowSteadyMatrix->avgMoment(order);
 
     std::cout << "Decay Test"<<std::endl;

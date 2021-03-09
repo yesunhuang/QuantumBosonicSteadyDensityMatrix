@@ -140,7 +140,7 @@ private:
      * @param tra
      */
     // TODO: 此处仅用double存储阶乘值，可能发生上溢出，如果有需要可改为 unsigned long long 或者 double
-    void subRepair(int depth, int offset, int mul, int ind, bool tra) {
+    void subRepair(int depth, int offset, unsigned long long mul, int ind, bool tra) {
         if (depth == size.size()) {
             data[offset] *= ayaji::Complex(sqrt(mul), 0);
             if (tra) {
@@ -148,7 +148,7 @@ private:
             }
             return;
         }
-        int factor = 1;
+        unsigned long long factor = 1;
         subRepair(depth + 1, offset, mul, 0, tra && (depth % 2 == 0 || (ind == 0)));
         for (int i = 1; i < size[depth]; ++i) {
             factor *= i;
@@ -203,10 +203,10 @@ private:
     inline ayaji::Complex doAvgMoment(int *index,
                                       const std::vector<int> &order, int depth, int mul) {
         if (depth == size.size()) {
-            return ayaji::Complex(mul, 0) * get(index);
+            return mul * get(index);
         }
         ayaji::Complex ret(0, 0);
-        for (int i = 1; i < size[depth]; ++i) {
+        for (int i = 0; i < size[depth]; ++i) {
             index[depth] = i;
             index[depth + 1] = i;
             auto pw = std::pow(i, order[depth / 2]);
