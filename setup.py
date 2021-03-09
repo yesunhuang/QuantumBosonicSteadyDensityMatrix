@@ -1,4 +1,33 @@
-from setuptools import setup, Extension, find_packages
+from setuptools import Extension, find_packages, setup
+from setuptools.command.build_ext import build_ext
+
+copts =  {
+    "msvc": ["/openmp"],
+    "mingw32" : ["-fopenmp"],
+    "unix": ["-fopenmp"],
+    "default": ["-fopenmp"],
+}
+lopts =  {
+    "msvc": [],
+    "mingw32" : ["-fopenmp"],
+    "unix": ["-fopenmp"],
+    "default": ["-fopenmp"],
+}
+
+class build_ext_subclass(build_ext):
+    def build_extensions(self):
+        c = self.compiler.compiler_type
+        copt = copts.get(c)
+        if copt is None:
+            copt = copts["default"]
+        lopt = lopts.get(c)
+        if lopt is None:
+            lopt = lopts["default"]
+        # assign option
+        for e in self.extensions:
+            e.extra_compile_args = copt
+            e.extra_link_args = lopt
+        build_ext.build_extensions(self)
 
 longdes = open("README.md",encoding="utf-8")
 
@@ -16,8 +45,6 @@ module1 = Extension(
         ("HAHA", None)
     ],
     language="c++",
-    extra_compile_args=["-fopenmp","/openmp"],
-    extra_link_args=["-fopenmp","/openmp"],
 )
 
 setup(
@@ -39,4 +66,5 @@ setup(
         "Programming Language :: C++",
         "Topic :: Scientific/Engineering :: Physics",
     ],
+    cmdclass={"build_ext": build_ext_subclass},
 )
