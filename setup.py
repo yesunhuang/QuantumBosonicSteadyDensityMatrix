@@ -16,8 +16,8 @@ module1 = Extension(
         ("HAHA", None)
     ],
     language="c++",
-    extra_compile_args=["-fopenmp"],
-    extra_link_args=["-fopenmp"],
+    extra_compile_args=["-fopenmp","/openmp"],
+    extra_link_args=["-fopenmp","/openmp"],
 )
 
 setup(
