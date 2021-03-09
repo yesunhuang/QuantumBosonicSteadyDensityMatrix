@@ -69,9 +69,10 @@ void DPSolver::doRun(int depth, const std::vector<int>& index) {
     int loopSize = matrixSizeArray[depth];
     // 主循环体
     // 所有数据都是从mapSrc读取写入到mapDst，故不会出现读写访问冲突，不加锁
+#pragma openmp parallel for
     for (int i = 0; i < loopSize; ++i) {
         for (int j = 0; j < loopSize; ++j) {
-#pragma omp task
+
             {
                 auto nInd = std::vector<int>(index);
                 nInd.push_back(i);
@@ -80,7 +81,6 @@ void DPSolver::doRun(int depth, const std::vector<int>& index) {
             }
         }
     }
-#pragma omp taskwait
 }
 
 bool DPSolver::run() {
