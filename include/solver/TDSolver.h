@@ -60,10 +60,10 @@ private:
                 size_t nextNeighbourIndex = getNextNeighbour();
                 std::vector<int> nextNeighbour = getNeighbour(root, nextNeighbourIndex);
                 // 更新原值
-                dst[_i]->set(root, src->get(root) + alpha * (gamma * epDeriver.calMasterEP(root) /
-                                                             epDeriver.calNeighbourEP(nextNeighbour,
-                                                                                      nextNeighbourIndex) *
-                                                             src->get(nextNeighbourIndex) - src->get(root)));
+                dst[_i]->set(root, src->get(root) + alpha *
+                                                    (gamma * neighbourCnt * epDeriver.calMasterEP(root) /
+                                                     epDeriver.calNeighbourEP(nextNeighbour, nextNeighbourIndex) *
+                                                     src->get(nextNeighbourIndex) - src->get(root)));
                 root = nextNeighbour;
             } while (inbound(root));
         } else {
@@ -101,7 +101,8 @@ public:
             maxRecTimes(maxRecTimes),
             matrixSizeArray(matrixSize),
             epDeriver(expression),
-            mapper(epDeriver.neighbourIndexes) {
+            mapper(epDeriver.neighbourIndexes),
+            neighbourCnt(epDeriver.neighbourIndexes.size()) {
         src = new MatrixMapper(matrixSize);
         dst.resize(REC_TIMES);
         for (int i = 0; i < REC_TIMES; ++i) {
