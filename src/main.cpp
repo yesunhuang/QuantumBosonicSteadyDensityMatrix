@@ -5,6 +5,7 @@
 //
 #include <iostream>
 #include "solver/DPSolver.h"
+#include "solver/TDSolver.h"
 
 void testSingleMode() {
     double E = 0.2;
@@ -89,6 +90,40 @@ void testSimplest()
     std::cout << *steadyMatrix << std::endl;
 }
 
+void testSimplestTD()
+{
+    double kappa = 1;
+    int Na = 4;
+    std::vector<int> Dim = std::vector<int>();
+    Dim.push_back(Na);
+    std::vector<int> rawIndex = std::vector<int>();
+    rawIndex.push_back(0);
+    rawIndex.push_back(0);
+    // construct operators
+    std::vector<int> CO = std::vector<int>();
+    CO.push_back(2);
+    RawTerm C0 = {ayaji::Complex(kappa, 0), CO};
+    std::vector<RawTerm> Hamiltonian = std::vector<RawTerm>();
+    std::vector<RawTerm> Collapse = std::vector<RawTerm>();
+    Collapse.push_back(C0);
+
+    EpDeriver dataSingle = EpDeriver(Hamiltonian, Collapse, rawIndex);
+    TDSolver tdsolver = TDSolver(Dim, dataSingle, 0.5, 0.5, 1000);
+
+    tdsolver.run();
+    MatrixMapper *rowSteadyMatrix = tdsolver.getResult();
+    TensorMatrix *steadyMatrix = rowSteadyMatrix->rowRho();
+
+    std::vector<int> order=std::vector<int>();
+    order.push_back(0);
+    ayaji::Complex population=rowSteadyMatrix->avgMoment(order);
+
+    std::cout << "TD Decay Test"<<std::endl;
+    std::cout << "Population:"<<population << std::endl;
+    std::cout << "DensityMatrix:"<<std::endl;
+    std::cout << *steadyMatrix << std::endl;
+}
+
 void testSHG() {
     double E = 0.4;
     double kappa_a = 1;
@@ -154,6 +189,7 @@ void testSHG() {
 
 int main() {
     testSimplest();
+    testSimplestTD();
     testSingleMode();
     testSHG();
     return 0;
