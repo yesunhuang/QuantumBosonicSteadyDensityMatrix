@@ -63,7 +63,7 @@ private:
                 dst[_i]->set(root, src->get(root) + alpha *
                                                     (gamma * neighbourCnt * epDeriver.calMasterEP(root) /
                                                      epDeriver.calNeighbourEP(nextNeighbour, nextNeighbourIndex) *
-                                                     src->get(nextNeighbourIndex) - src->get(root)));
+                                                     src->get(nextNeighbour) - src->get(root)));
                 root = nextNeighbour;
             } while (inbound(root));
         } else {
@@ -79,12 +79,12 @@ private:
 public:
     void run() {
         for (int j = 0; j < maxRecTimes; ++j) {
-#pragma omp parallel for
+//#pragma omp parallel for
             for (int i = 0; i < REC_TIMES; ++i) {
                 doRun(std::vector<int>(), 0, i);
             }
             // 求平均
-#pragma omp parallel for
+//#pragma omp parallel for
             for (int i = 0; i < src->getLength(); ++i) {
                 ayaji::Complex res;
                 for (int k = 0; k < REC_TIMES; ++k) {

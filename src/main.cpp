@@ -115,7 +115,7 @@ void testSimplestTD()
     TensorMatrix *steadyMatrix = rowSteadyMatrix->rowRho();
 
     std::vector<int> order=std::vector<int>();
-    order.push_back(0);
+    order.push_back(1);
     ayaji::Complex population=rowSteadyMatrix->avgMoment(order);
 
     std::cout << "TD Decay Test"<<std::endl;
@@ -188,9 +188,9 @@ void testSHG() {
 }
 
 int main() {
-    testSimplest();
+    //testSimplest();
     testSimplestTD();
-    testSingleMode();
-    testSHG();
+    //testSingleMode();
+    //testSHG();
     return 0;
 }
