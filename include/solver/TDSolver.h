@@ -53,6 +53,15 @@ private:
         return true;
     }
 
+    std::vector<int> TDSolver::getOpposite(const std::vector<int>& root) {
+    std::vector<int> tmp = std::vector<int>();
+    for (int i = 0; i < root.size(); i += 2) {
+        tmp.push_back(root[i + 1]);
+        tmp.push_back(root[i]);
+    }
+    return tmp;
+}
+
     void doRun(std::vector<int> index, int depth, int _i) {
         if (depth == matrixSizeArray.size()) {
             std::vector<int> root = index;
@@ -60,10 +69,13 @@ private:
                 size_t nextNeighbourIndex = getNextNeighbour();
                 std::vector<int> nextNeighbour = getNeighbour(root, nextNeighbourIndex);
                 // 更新原值
-                dst[_i]->set(root, src->get(root) + alpha *
+                ayaji::Complex result=src->get(root) + alpha *
                                                     (gamma * neighbourCnt * epDeriver.calMasterEP(root) /
                                                      epDeriver.calNeighbourEP(nextNeighbour, nextNeighbourIndex) *
-                                                     src->get(nextNeighbour) - src->get(root)));
+                                                     src->get(nextNeighbour) - src->get(root));
+                dst[_i]->set(root, result);
+                ayaji::Complex resultCj=result.conj();
+                dst[_i]->set(getOpposite(root),resultCj);
                 root = nextNeighbour;
             } while (inbound(root));
         } else {
