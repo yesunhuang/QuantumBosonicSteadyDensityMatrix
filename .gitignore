@@ -357,3 +357,10 @@ Makefile
 # exe
 main
 
+# pyenv
+.python-version
+
+# setuptools
+MANIFEST
+dist/
+bostix.egg-info/

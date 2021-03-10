@@ -215,6 +215,8 @@ void Complex::set(double real, double image) {
 // normal precision
 Complex::Complex() : real(0.0), image(0.0) {}
 
+Complex::Complex(double real) : real(real), image(0.0) {}
+
 Complex::Complex(double real, double image) : real(real), image(image) {}
 
 Complex::Complex(const Complex& o) {
@@ -254,6 +256,22 @@ Complex Complex::operator/(const Complex& o) const {
                    (this->image * o.real - this->real * o.image) * temp);
 }
 
+Complex Complex::operator+(const double o) const {
+    return Complex(this->real + o, this->image + o);
+}
+
+Complex Complex::operator-(const double o) const {
+    return Complex(this->real - o, this->image - o);
+}
+
+Complex Complex::operator*(const double o) const {
+    return Complex(this->real * o, this->image * o);
+}
+
+Complex Complex::operator/(const double o) const {
+    return Complex(this->real / o, this->image / o);
+}
+
 Complex& Complex::operator+=(const Complex& o) {
     this->real += o.real;
     this->image += o.image;
@@ -283,6 +301,31 @@ Complex& Complex::operator/=(const Complex& o) {
     return *this;
 }
 
+
+Complex& Complex::operator+=(const double o) {
+    this->real += o;
+    this->image += o;
+    return *this;
+}
+
+Complex& Complex::operator-=(const double o) {
+    this->real -= o;
+    this->image -= o;
+    return *this;
+}
+
+Complex& Complex::operator*=(const double o) {
+    this->real *= o;
+    this->image *= o;
+    return *this;
+}
+
+Complex& Complex::operator/=(const double o) {
+    this->real /= o;
+    this->image /= o;
+    return *this;
+}
+
 Complex& Complex::operator++() {
     this->real += 1;
     return *this;
@@ -305,8 +348,9 @@ Complex Complex::operator--(int) {
     return c;
 }
 
+
 Complex Complex::conj() {
-    Complex tmp=Complex(this->real,-1*this->image);
+    Complex tmp = Complex(this->real, -1 * this->image);
     return tmp;
 }
 
@@ -334,6 +378,21 @@ void Complex::set(double real, double image) {
     this->real = real;
     this->image = image;
 }
+
+Complex operator+(const double lhs, const Complex &rhs) {
+    return Complex(lhs + rhs.getReal(), lhs + rhs.getImage());
+};
+Complex operator-(const double lhs, const Complex &rhs) {
+    return Complex(lhs - rhs.getReal(), lhs - rhs.getImage());
+};
+Complex operator*(const double lhs, const Complex &rhs) {
+    return Complex((lhs * rhs.getReal()), (lhs * rhs.getImage()));
+};
+Complex operator/(const double lhs, const Complex &rhs) {
+    double temp = lhs / (rhs.getReal() * rhs.getReal() + rhs.getImage() * rhs.getImage());
+    return Complex(rhs.getReal() * temp, - rhs.getImage() * temp);
+};
+
 #endif  // !HIGH_PRECISION
 
 // common

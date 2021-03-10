@@ -30,17 +30,18 @@ inline std::vector<int> DPSolver::getNeighbour(std::vector<int> root,
 inline ayaji::Complex DPSolver::leftSum(const std::vector<int>& indexArray) {
     ayaji::Complex sum;
     auto neighbourIndex = getNeighbours(indexArray);
+    auto offset = mapSrc->getOffset(indexArray);
     for (int i = 0; i < neighbourIndex.size(); ++i) {
         sum +=
-            epd.calNeighbourEP(neighbourIndex[i], i) * mapSrc->get(neighbourIndex[i]);
+            epd.calNeighbourEP(neighbourIndex[i], i) * mapSrc->get(offset + absoluteOffset[i], neighbourIndex[i]);
     }
     return sum;
 }
 
-std::vector<int> DPSolver::getOpposite(std::vector<int> root) {
-    std::vector<int> tmp=std::vector<int> ();
-    for (int i=0;i<root.size();i+=2) {
-        tmp.push_back(root[i+1]);
+std::vector<int> DPSolver::getOpposite(const std::vector<int>& root) {
+    std::vector<int> tmp = std::vector<int>();
+    for (int i = 0; i < root.size(); i += 2) {
+        tmp.push_back(root[i + 1]);
         tmp.push_back(root[i]);
     }
     return tmp;
@@ -70,11 +71,13 @@ void DPSolver::doRun(int depth, const std::vector<int>& index) {
     // 所有数据都是从mapSrc读取写入到mapDst，故不会出现读写访问冲突，不加锁
 #pragma omp parallel for
     for (int i = 0; i < loopSize; ++i) {
-        for (int j = 0; j <= loopSize; ++j) {
-            auto nInd = std::vector<int>(index);
-            nInd.push_back(i);
-            nInd.push_back(j);
-            doRun(depth + 1, nInd);
+        for (int j = 0; j < loopSize; ++j) {
+            {
+                auto nInd = std::vector<int>(index);
+                nInd.push_back(i);
+                nInd.push_back(j);
+                doRun(depth + 1, nInd);
+            }
         }
     }
 }
