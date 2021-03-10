@@ -1,15 +1,9 @@
+/* Copyright 2021 YesunHuang & guch8017 */
 //
 // Created by guch8017 on 2021/2/10.
 //
 
-#include <vector>
-#include <random>
-#include <omp.h>
-#include "./complex.h"
-#include "./MatrixMapper.h"
-#include "expression/EpDeriver.h"
-
-#define REC_TIMES 8
+#include "solver/TDSolver.h"
 
 class TDSolver {
 private:

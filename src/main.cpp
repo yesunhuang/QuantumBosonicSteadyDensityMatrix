@@ -5,6 +5,7 @@
 //
 #include <iostream>
 #include "solver/DPSolver.h"
+#include "solver/TDSolver.h"
 
 void testSingleMode() {
     double E = 0.2;
@@ -39,10 +40,15 @@ void testSingleMode() {
     Collapse.push_back(C0);
 
     EpDeriver dataSingle = EpDeriver(Hamiltonian, Collapse, rawIndex);
-    DPSolver dpsolver = DPSolver(Dim, dataSingle, 0.5, 1E-10, 1000);
 
-    dpsolver.run();
-    MatrixMapper *rowSteadyMatrix = dpsolver.getResult();
+    //DPSolver dpsolver = DPSolver(Dim, dataSingle, 0.5, 1E-10, 1000);
+    //dpsolver.run();
+    //MatrixMapper *rowSteadyMatrix = dpsolver.getResult();
+
+    TDSolver tdsolver = TDSolver(Dim, dataSingle, 0.5, 1.0, 1000);
+    tdsolver.run();
+    MatrixMapper *rowSteadyMatrix = tdsolver.getResult();
+
     TensorMatrix *steadyMatrix = rowSteadyMatrix->rowRho();
 
     std::vector<int> order=std::vector<int>();
@@ -73,10 +79,15 @@ void testSimplest()
     Collapse.push_back(C0);
 
     EpDeriver dataSingle = EpDeriver(Hamiltonian, Collapse, rawIndex);
-    DPSolver dpsolver = DPSolver(Dim, dataSingle, 0.5, 1E-10, 1000);
+    
+    //DPSolver dpsolver = DPSolver(Dim, dataSingle, 0.5, 1E-10, 1000);
+    //dpsolver.run();
+    //MatrixMapper *rowSteadyMatrix = dpsolver.getResult();
 
-    dpsolver.run();
-    MatrixMapper *rowSteadyMatrix = dpsolver.getResult();
+    TDSolver tdsolver = TDSolver(Dim, dataSingle, 0.5, 1.0, 1000);
+    tdsolver.run();
+    MatrixMapper *rowSteadyMatrix = tdsolver.getResult();
+    
     TensorMatrix *steadyMatrix = rowSteadyMatrix->rowRho();
 
     std::vector<int> order=std::vector<int>();
@@ -154,7 +165,7 @@ void testSHG() {
 
 int main() {
     testSimplest();
-    testSingleMode();
-    testSHG();
+    //testSingleMode();
+    //testSHG();
     return 0;
 }

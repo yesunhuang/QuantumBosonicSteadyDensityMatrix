@@ -95,7 +95,7 @@ public:
 #endif
         mapSrc = new MatrixMapper(matrixSize);
         mapDst = new MatrixMapper(matrixSize);
-        for(auto map: mapper){
+        for (auto map: mapper) {
             absoluteOffset.push_back(mapSrc->getOffset(map));
         }
     }
