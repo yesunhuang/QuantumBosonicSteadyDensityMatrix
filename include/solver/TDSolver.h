@@ -70,12 +70,7 @@ private:
             do {
                 size_t nextNeighbourIndex = getNextNeighbour();
                 std::vector<int> nextNeighbour = getNeighbour(root, nextNeighbourIndex);
-                // 更新原值
-                // 式1的解释，答案不对
-                // ayaji::Complex rootVal = src->get(root);
-                // ayaji::Complex result = rootVal + alpha * (gamma * epDeriver.calNeighbourEP(nextNeighbour, nextNeighbourIndex) / epDeriver.calMasterEP(root) * src->get(nextNeighbour) - rootVal);
-                // 式2的解释，不收敛
-                ayaji::Complex result = rootValue + alpha * (gamma * neighbourCnt * epDeriver.calNeighbourEP(nextNeighbour, nextNeighbourIndex) / epDeriver.calMasterEP(root) - src->get(root));
+                ayaji::Complex result = rootValue + alpha * (gamma * neighbourCnt * epDeriver.calNeighbourEP(nextNeighbour, nextNeighbourIndex) / epDeriver.calMasterEP(root) * src->get(nextNeighbour) - src->get(root));
                 dst[_i]->set(root, result);
                 ayaji::Complex resultCj = result.conj();
                 dst[_i]->set(getOpposite(root), resultCj);
