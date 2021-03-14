@@ -5,11 +5,12 @@
 #include <vector>
 #include <random>
 #include <omp.h>
+#include <ctime>
 #include "./complex.h"
 #include "./MatrixMapper.h"
 #include "expression/EpDeriver.h"
 
-#define REC_TIMES 8
+#define REC_TIMES 32
 
 class TDSolver {
 private:
@@ -53,30 +54,33 @@ private:
         return true;
     }
 
-    std::vector<int> TDSolver::getOpposite(const std::vector<int>& root) {
-    std::vector<int> tmp = std::vector<int>();
-    for (int i = 0; i < root.size(); i += 2) {
-        tmp.push_back(root[i + 1]);
-        tmp.push_back(root[i]);
+    static std::vector<int> getOpposite(const std::vector<int> &root) {
+        std::vector<int> tmp = std::vector<int>();
+        for (int i = 0; i < root.size(); i += 2) {
+            tmp.push_back(root[i + 1]);
+            tmp.push_back(root[i]);
+        }
+        return tmp;
     }
-    return tmp;
-}
 
-    void doRun(std::vector<int> index, int depth, int _i) {
+    void doRun(const std::vector<int>& index, int depth, int _i) {
         if (depth == matrixSizeArray.size()) {
             std::vector<int> root = index;
+            ayaji::Complex rootValue = src->get(root);  // 用于保存更新后的值，防止出现多线程读写冲突，顺带提高性能
             do {
                 size_t nextNeighbourIndex = getNextNeighbour();
                 std::vector<int> nextNeighbour = getNeighbour(root, nextNeighbourIndex);
                 // 更新原值
-                ayaji::Complex result=src->get(root) + alpha *
-                                                    (gamma * neighbourCnt * epDeriver.calMasterEP(root) /
-                                                     epDeriver.calNeighbourEP(nextNeighbour, nextNeighbourIndex) *
-                                                     src->get(nextNeighbour) - src->get(root));
+                // 式1的解释，答案不对
+                // ayaji::Complex rootVal = src->get(root);
+                // ayaji::Complex result = rootVal + alpha * (gamma * epDeriver.calNeighbourEP(nextNeighbour, nextNeighbourIndex) / epDeriver.calMasterEP(root) * src->get(nextNeighbour) - rootVal);
+                // 式2的解释，不收敛
+                ayaji::Complex result = rootValue + alpha * (gamma * neighbourCnt * epDeriver.calNeighbourEP(nextNeighbour, nextNeighbourIndex) / epDeriver.calMasterEP(root) - src->get(root));
                 dst[_i]->set(root, result);
-                ayaji::Complex resultCj=result.conj();
-                dst[_i]->set(getOpposite(root),resultCj);
+                ayaji::Complex resultCj = result.conj();
+                dst[_i]->set(getOpposite(root), resultCj);
                 root = nextNeighbour;
+                rootValue = result;
             } while (inbound(root));
         } else {
             for (int i = 0; i < matrixSizeArray[depth]; ++i) {
@@ -90,13 +94,13 @@ private:
 
 public:
     void run() {
-        for (int j = 0; j < maxRecTimes; ++j) {
-//#pragma omp parallel for
+        for (int j = 0; j < maxRecTimes / REC_TIMES; ++j) {
+#pragma omp parallel for
             for (int i = 0; i < REC_TIMES; ++i) {
                 doRun(std::vector<int>(), 0, i);
             }
             // 求平均
-//#pragma omp parallel for
+#pragma omp parallel for
             for (int i = 0; i < src->getLength(); ++i) {
                 ayaji::Complex res;
                 for (int k = 0; k < REC_TIMES; ++k) {
@@ -107,7 +111,8 @@ public:
         }
     }
 
-    TDSolver(std::vector<int> matrixSize, EpDeriver expression, double alpha, double gamma, int maxRecTimes) :
+    TDSolver(const std::vector<int> &matrixSize, const EpDeriver &expression, double alpha, double gamma,
+             int maxRecTimes) :
             alpha(alpha),
             gamma(gamma),
             maxRecTimes(maxRecTimes),
@@ -120,6 +125,7 @@ public:
         for (int i = 0; i < REC_TIMES; ++i) {
             dst[i] = new MatrixMapper(matrixSize);
         }
+        rdEngine.seed(time(nullptr));
         uid = std::uniform_int_distribution<unsigned>(0, expression.neighbourIndexes.size() - 1);
     }
 

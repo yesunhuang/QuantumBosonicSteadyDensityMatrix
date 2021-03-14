@@ -89,7 +89,7 @@ void testSingleModeTD() {
     Collapse.push_back(C0);
 
     EpDeriver dataSingle = EpDeriver(Hamiltonian, Collapse, rawIndex);
-    TDSolver tdsolver = TDSolver(Dim, dataSingle, 0.5, 1, 10);
+    TDSolver tdsolver = TDSolver(Dim, dataSingle, 0.5, 1, 1000);
 
     tdsolver.run();
     MatrixMapper *rowSteadyMatrix = tdsolver.getResult();
@@ -99,7 +99,7 @@ void testSingleModeTD() {
     order.push_back(1);
     ayaji::Complex population=rowSteadyMatrix->avgMoment(order);
     
-    std::cout << "Single Mode Test"<<std::endl;
+    std::cout << "Single Mode Test TD"<<std::endl;
     std::cout << "Population:"<<population << std::endl;
     std::cout << "DensityMatrix:"<<std::endl;
     std::cout << *steadyMatrix << std::endl;
