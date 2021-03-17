@@ -89,7 +89,7 @@ void testSingleModeTD() {
     Collapse.push_back(C0);
 
     EpDeriver dataSingle = EpDeriver(Hamiltonian, Collapse, rawIndex);
-    TDSolver tdsolver = TDSolver(Dim, dataSingle, 0.5, 1, 1000);
+    TDSolver tdsolver = TDSolver(Dim, dataSingle, 0.5, 1, 34);
 
     tdsolver.run();
     MatrixMapper *rowSteadyMatrix = tdsolver.getResult();
