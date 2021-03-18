@@ -66,7 +66,7 @@ private:
     void doRun(const std::vector<int>& index, int depth, int _i) {
         if (depth == matrixSizeArray.size()) {
             std::vector<int> root = index;
-            ayaji::Complex rootValue = src->get(root);  // 用于保存更新后的值，防止出现多线程读写冲突，顺带提高性能
+            ayaji::Complex rootValue = dst[_i]->get(root);  // 用于保存更新后的值，防止出现多线程读写冲突，顺带提高性能
             do {
                 size_t nextNeighbourIndex = getNextNeighbour();
                 std::vector<int> nextNeighbour = getNeighbour(root, nextNeighbourIndex);
@@ -74,18 +74,21 @@ private:
                 if(div.isZero()){
 #pragma omp critical
                     {
+                        /*
                         printf("Div by zero detected: ");
                         for (auto i : root) {
                             printf("%d ", i);
                         }
                         printf("\n");
+                        */
                         root = nextNeighbour;
-                        rootValue = src->get(nextNeighbour);
+                        rootValue = dst[_i]->get(nextNeighbour);
                     }
+                    continue;
                 }
-                ayaji::Complex result = rootValue + alpha * (gamma * neighbourCnt * epDeriver.calNeighbourEP(nextNeighbour, nextNeighbourIndex) / div * src->get(nextNeighbour) - src->get(root));
+                ayaji::Complex result = rootValue + alpha * (gamma * neighbourCnt * epDeriver.calNeighbourEP(nextNeighbour, nextNeighbourIndex) / div * dst[_i]->get(nextNeighbour) - dst[_i]->get(root));
                 if (result.getReal() != result.getReal()){
-                    throw "Nan detected!\n";
+                    //throw "Nan detected!\n";
                 }
                 dst[_i]->set(root, result);
                 ayaji::Complex resultCj = result.conj();
@@ -118,6 +121,9 @@ public:
                     res += dst[k]->get(i);
                 }
                 src->set(i, res / REC_TIMES);
+                for(int k = 0; k < REC_TIMES; ++k){
+                    dst[k]->set(i, res / REC_TIMES);
+                }
             }
         }
     }
