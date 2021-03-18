@@ -11,7 +11,7 @@ void testSingleMode() {
     double E = 0.2;
     double kappa = 1;
     double delta=0.5;
-    int Na = 3;
+    int Na = 2;
     std::vector<int> Dim = std::vector<int>();
     Dim.push_back(Na);
     std::vector<int> rawIndex = std::vector<int>();
@@ -60,7 +60,7 @@ void testSingleModeTD() {
     double E = 0.2;
     double kappa = 1;
     double delta=0.5;
-    int Na = 3;
+    int Na = 2;
     std::vector<int> Dim = std::vector<int>();
     Dim.push_back(Na);
     std::vector<int> rawIndex = std::vector<int>();
@@ -89,7 +89,7 @@ void testSingleModeTD() {
     Collapse.push_back(C0);
 
     EpDeriver dataSingle = EpDeriver(Hamiltonian, Collapse, rawIndex);
-    TDSolver tdsolver = TDSolver(Dim, dataSingle, 0.5, 1, 34);
+    TDSolver tdsolver = TDSolver(Dim, dataSingle, 1, 1, 100000);
 
     tdsolver.run();
     MatrixMapper *rowSteadyMatrix = tdsolver.getResult();
