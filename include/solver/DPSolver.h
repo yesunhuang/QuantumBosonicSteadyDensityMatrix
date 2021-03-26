@@ -64,6 +64,8 @@ private:
     inline std::vector<std::vector<int>> getNeighbours(
         const std::vector<int>& root);
 
+    ayaji::Complex getZeroSum(int depth, int mul, int* index);
+
     /**
      * 给出原点坐标，返回第 index 个邻居坐标
      * @param root 原点坐标

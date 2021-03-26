@@ -118,20 +118,6 @@ private:
     }
 
     /**
-     * 获取对应坐标的值
-     * @param index 坐标列表
-     * @return
-     */
-    inline ayaji::Complex get(const int *index) {
-        size_t offset = 0;
-        for (int i = 0; i < off.size(); i += 2) {
-            // 此处不考虑越界情况
-            offset += off[i] * index[i] + off[i + 1] * index[i + 1];
-        }
-        return get(offset);
-    }
-
-    /**
      * 还原归一化条件
      * @param depth
      * @param offset
@@ -265,12 +251,12 @@ public:
         int i = 0;
         ayaji::Complex init(static_cast<double>(1.0) / offset, 0);
 
-        /*
+
         for (i = 0; i < length; ++i) {
             data[i] = init;
         }
-         */
-        data[0]=ayaji::Complex(1,0);
+
+        //data[0]=ayaji::Complex(1,0);
         //_init(std::vector<int>(), init);
     }
 
@@ -408,6 +394,20 @@ public:
         }
         return offset;
     }
+
+/**
+ * 获取对应坐标的值
+ * @param index 坐标列表
+ * @return
+ */
+inline ayaji::Complex get(const int *index) {
+    size_t offset = 0;
+    for (int i = 0; i < off.size(); i += 2) {
+        // 此处不考虑越界情况
+        offset += off[i] * index[i] + off[i + 1] * index[i + 1];
+    }
+    return get(offset);
+}
 };
 
 #endif  // INCLUDE_MATRIXMAPPER_H_

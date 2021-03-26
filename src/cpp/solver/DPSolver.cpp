@@ -69,7 +69,7 @@ void DPSolver::doRun(int depth, const std::vector<int>& index) {
     int loopSize = matrixSizeArray[depth];
     // 主循环体
     // 所有数据都是从mapSrc读取写入到mapDst，故不会出现读写访问冲突，不加锁
-#pragma omp parallel for
+    #pragma omp parallel for
     for (int i = 0; i < loopSize; ++i) {
         for (int j = 0; j < loopSize; ++j) {
             {
@@ -82,11 +82,33 @@ void DPSolver::doRun(int depth, const std::vector<int>& index) {
     }
 }
 
+ayaji::Complex DPSolver::getZeroSum(int depth, int mul, int* index){
+    if(depth == matrixSizeArray.size()) {
+        return mul * mapSrc->get(index);
+    } else {
+        ayaji::Complex ret;
+        // 从1开始，包含0的项必定结果为0
+        for (int i = 1; i < matrixSizeArray[depth]; ++i) {
+            index[depth] = i;
+            for (int j = 1; j < matrixSizeArray[depth]; ++j) {
+                index[depth + 1] = j;
+                ret += getZeroSum(depth + 2, mul * i * j, index);
+            }
+        }
+        return ret;
+    }
+}
+
 bool DPSolver::run() {
     // 最外层循环为大迭代，不考虑并行关系
+    int* list = (int *)malloc(sizeof (int ) * matrixSizeArray.size());
     for (int i = 0; i < maxRecurveTimes; ++i) {
         fit = true;
         doRun(0, std::vector<int>());
+
+        // 对全0点的修正
+        mapDst->set(0, alpha * (1 - getZeroSum(0, 1, list)) + minusAlpha * mapSrc->get((size_t)0));
+
         std::swap(mapSrc, mapDst);
         if (fit) {
             return true;
