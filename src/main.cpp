@@ -237,10 +237,10 @@ void testSHG() {
 }
 
 int main() {
-    //testSimplest();
+    testSimplest();
     //testSimplestTD();
-    testSingleModeTD();
+    //testSingleModeTD();
     testSingleMode();
-    //testSHG();
+    testSHG();
     return 0;
 }
