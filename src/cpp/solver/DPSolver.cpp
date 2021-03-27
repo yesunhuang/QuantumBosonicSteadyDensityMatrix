@@ -92,7 +92,7 @@ ayaji::Complex DPSolver::getZeroSum(int depth, int mul, int* index){
             index[depth] = i;
             for (int j = 1; j < matrixSizeArray[depth]; ++j) {
                 index[depth + 1] = j;
-                ret += getZeroSum(depth + 2, mul * i * j, index);
+                ret += getZeroSum(depth + 1, mul * i * j, index);
             }
         }
         return ret;
@@ -111,8 +111,10 @@ bool DPSolver::run() {
 
         std::swap(mapSrc, mapDst);
         if (fit) {
+            free(list);
             return true;
         }
     }
+    free(list);
     return false;
 }
