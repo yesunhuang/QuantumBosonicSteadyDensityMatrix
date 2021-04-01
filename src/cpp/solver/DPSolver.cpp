@@ -89,9 +89,9 @@ ayaji::Complex DPSolver::getZeroSum(int depth, int mul, int* index){
         ayaji::Complex ret;
         // 从1开始，包含0的项必定结果为0
         for (int i = 1; i < matrixSizeArray[depth]; ++i) {
-            index[depth] = i;
+            index[depth * 2] = i;
             for (int j = 1; j < matrixSizeArray[depth]; ++j) {
-                index[depth + 1] = j;
+                index[depth * 2 + 1] = j;
                 ret += getZeroSum(depth + 1, mul * i * j, index);
             }
         }
@@ -101,7 +101,7 @@ ayaji::Complex DPSolver::getZeroSum(int depth, int mul, int* index){
 
 bool DPSolver::run() {
     // 最外层循环为大迭代，不考虑并行关系
-    int* list = (int *)malloc(sizeof (int ) * matrixSizeArray.size());
+    int* list = (int *)malloc(sizeof (int ) * matrixSizeArray.size() * 2);
     for (int i = 0; i < maxRecurveTimes; ++i) {
         fit = true;
         doRun(0, std::vector<int>());
