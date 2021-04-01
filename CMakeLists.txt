@@ -3,20 +3,37 @@ cmake_minimum_required( VERSION 3.16 )
 
 set(CMAKE_CXX_STANDARD 11)
 
-include_directories( include )
-include_directories( include/solver )
-include_directories( include/expression )
-find_package( OpenMP REQUIRED )
+# python
+# set(Python3_USE_STATIC_LIBS TRUE)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+find_package(Python3 COMPONENTS Interpreter Development)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+
+include_directories(include)
+include_directories(include/solver)
+include_directories(include/expression)
+
+# openmp
+find_package(OpenMP REQUIRED)
+set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS})
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS})
+set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS})
 # add debug param
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG -O0")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+set(CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG -O0)
 
-add_executable( main src/main.cpp
+set(SOURCES 
+        src/main.cpp
         src/cpp/solver/DPSolver.cpp
         src/cpp/complex.cpp
         src/cpp/Expression/EpDeriver.cpp
         )
+
+# cpp version
+add_executable(main ${SOURCES})
 target_link_libraries(main PRIVATE OpenMP::OpenMP_CXX)
+
+# python version
+add_library(python SHARED ${SOURCES} src/python/py_wrapper.cpp)
+target_include_directories(python PUBLIC ${Python3_INCLUDE_DIRS})
+target_link_directories(python PUBLIC ${Python3_LIBRARY_DIRS})
+set_target_properties(python PROPERTIES OUTPUT_NAME "core" PREFIX "")
