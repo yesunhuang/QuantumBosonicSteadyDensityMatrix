@@ -1,2 +1,5 @@
 setuptools
 attrs
+scikit-build
+ninja
+wheel

@@ -3,6 +3,7 @@
 // Created by guch8017 on 2021/2/10.
 //
 
+#include <algorithm>
 #include "solver/DPSolver.h"
 
 inline std::vector<std::vector<int>> DPSolver::getNeighbours(

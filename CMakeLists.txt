@@ -1,13 +1,7 @@
 project(Quantum)
-cmake_minimum_required( VERSION 3.16 )
+cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_CXX_STANDARD 11)
-
-# python
-# set(Python3_USE_STATIC_LIBS TRUE)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-find_package(Python3 COMPONENTS Interpreter Development)
-
 
 include_directories(include)
 include_directories(include/solver)
@@ -19,7 +13,7 @@ set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS})
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS})
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS})
 # add debug param
-set(CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG -O0)
+# set(CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG -O0)
 
 set(SOURCES 
         src/main.cpp
@@ -32,8 +26,9 @@ set(SOURCES
 add_executable(main ${SOURCES})
 target_link_libraries(main PRIVATE OpenMP::OpenMP_CXX)
 
-# python version
-add_library(python SHARED ${SOURCES} src/python/py_wrapper.cpp)
-target_include_directories(python PUBLIC ${Python3_INCLUDE_DIRS})
-target_link_directories(python PUBLIC ${Python3_LIBRARY_DIRS})
-set_target_properties(python PROPERTIES OUTPUT_NAME "core" PREFIX "")
+if (SKBUILD)
+        find_package(PythonExtensions REQUIRED)
+        add_library(core MODULE ${SOURCES} src/python/py_wrapper.cpp)
+        python_extension_module(core)
+        install(TARGETS core LIBRARY DESTINATION bostix)
+endif()
