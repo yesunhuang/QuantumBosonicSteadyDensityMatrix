@@ -206,11 +206,11 @@ private:
      * @param index 外部调用应传入一空的vector
      * @param value 传入 1 / length
      */
-    void _init(std::vector<int> index, ayaji::Complex value){
-        if(index.size() == size.size()){
+    void _init(std::vector<int> index, ayaji::Complex value) {
+        if (index.size() == size.size()) {
             set(index, value, false);
-        }else{
-            for(int i = 0; i < size[index.size()]; ++i){
+        } else {
+            for (int i = 0; i < size[index.size()]; ++i) {
                 auto ind2 = index;
                 ind2.push_back(i);
                 ind2.push_back(i);
@@ -251,12 +251,13 @@ public:
         int i = 0;
         ayaji::Complex init(static_cast<double>(1.0) / offset, 0);
 
-
+        /*
         for (i = 0; i < length; ++i) {
             data[i] = init;
         }
+        */
 
-        //data[0]=ayaji::Complex(1,0);
+        data[0]=ayaji::Complex(1,0);
         //_init(std::vector<int>(), init);
     }
 
@@ -278,7 +279,7 @@ public:
         return get(offset);
     }
 
-    inline ayaji::Complex get(int offset, const std::vector<int> &list){
+    inline ayaji::Complex get(int offset, const std::vector<int> &list) {
         for (int i = 0; i < list.size(); i += 2) {
             if (size[i] <= list[i] || size[i + 1] <= list[i + 1] || list[i] < 0 || list[i + 1] < 0)
                 return ayaji::Complex();
