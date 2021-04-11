@@ -40,7 +40,7 @@ void testSingleMode() {
     Collapse.push_back(C0);
 
     EpDeriver dataSingle = EpDeriver(Hamiltonian, Collapse, rawIndex);
-    DPSolver dpsolver = DPSolver(Dim, dataSingle, 0.5, 1E-10, 1000);
+    DPSolver dpsolver = DPSolver(Dim, dataSingle, 0.5, 1E-10, 3);
 
     dpsolver.run();
     MatrixMapper *rowSteadyMatrix = dpsolver.getResult();
@@ -237,10 +237,10 @@ void testSHG() {
 }
 
 int main() {
-    testSimplest();
+    //testSimplest();
     //testSimplestTD();
     //testSingleModeTD();
     testSingleMode();
-    testSHG();
+    //testSHG();
     return 0;
 }
