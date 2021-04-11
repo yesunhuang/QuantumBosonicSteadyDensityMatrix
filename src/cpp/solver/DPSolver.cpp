@@ -63,8 +63,11 @@ void DPSolver::doRun(int depth, const std::vector<int>& index) {
                 fit = false;
             }
         }
-        mapDst->set(index, newValue);
-        mapDst->set(getOpposite(index), newValue.conj());
+#pragma omp critical
+        {
+            mapDst->set(index, newValue);
+            mapDst->set(getOpposite(index), newValue.conj());
+        }
         return;
     }
     int loopSize = matrixSizeArray[depth];
