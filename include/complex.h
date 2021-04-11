@@ -62,7 +62,7 @@ public:
     Complex operator++(int);
     Complex operator--(int);
 
-    Complex conj();
+    Complex conj() const;
     
     bool isZero() const;
 
@@ -70,9 +70,9 @@ public:
     double getImage() const;
     std::string getString() const;
 
-    void setReal(double real);
-    void setImage(double image);
-    void set(double real, double image);
+    void setReal(double _real);
+    void setImage(double _image);
+    void set(double _real, double _image);
 
     friend inline std::ostream& operator<< (std::ostream &out, const Complex& c) {
         out << c.real << "+" << c.image << "i";
@@ -93,10 +93,10 @@ private:
 #endif  // HIGH_PRECISION
 };
 #ifndef HIGH_PRECISION
-    Complex operator+(const double lhs, const Complex &rhs);
-    Complex operator-(const double lhs, const Complex &rhs);
-    Complex operator*(const double lhs, const Complex &rhs);
-    Complex operator/(const double lhs, const Complex &rhs);
+    Complex operator+(double lhs, const Complex &rhs);
+    Complex operator-(double lhs, const Complex &rhs);
+    Complex operator*(double lhs, const Complex &rhs);
+    Complex operator/(double lhs, const Complex &rhs);
 #endif
 }  // namespace ayaji
 

@@ -6,8 +6,9 @@
 #ifndef INCLUDE_MATRIXMAPPER_H_
 #define INCLUDE_MATRIXMAPPER_H_
 
-#include <assert.h>
+#include <cassert>
 #include <iostream>
+#include <utility>
 #include <vector>
 #include <cmath>
 #include "./complex.h"
@@ -23,11 +24,11 @@ struct TensorMatrix {
 
     ~TensorMatrix() { delete[] data; }
 
-    inline void set(size_t _x, size_t _y, ayaji::Complex value) {
+    inline void set(size_t _x, size_t _y, const ayaji::Complex &value) const {
         data[_x * x + _y] = value;
     }
 
-    inline ayaji::Complex get(size_t _x, size_t _y) {
+    inline ayaji::Complex get(size_t _x, size_t _y) const {
         return data[_x * x + _y];
     }
 
@@ -59,62 +60,30 @@ private:
     /**
      * 生成张量的辅助函数
      * @param _rho
-     * @param length
+     * @param _length
      * @param curIndex
      * @param sum_x
      * @param sum_y
      */
     void rho(TensorMatrix *_rho,
-             int length,
+             int _length,
              int *curIndex,
              int sum_x,
              int sum_y) {
         // 注意：此处不要多线程化，使用了大量非线程安全操作，多线程绝对会出bug
-        if (length == size.size()) {
+        if (_length == size.size()) {
             _rho->set(sum_x, sum_y, get(curIndex));
         } else {
-            for (int i = 0; i < size[length]; ++i) {
-                curIndex[length] = i;
-                size_t off_x = sum_x + off_op[length / 2] * i;
-                for (int j = 0; j < size[length]; ++j) {
-                    curIndex[length + 1] = j;
-                    rho(_rho, length + 2, curIndex, off_x,
-                        sum_y + off_op[length / 2] * j);
+            for (int i = 0; i < size[_length]; ++i) {
+                curIndex[_length] = i;
+                size_t off_x = sum_x + off_op[_length / 2] * i;
+                for (int j = 0; j < size[_length]; ++j) {
+                    curIndex[_length + 1] = j;
+                    rho(_rho, _length + 2, curIndex, off_x,
+                        sum_y + off_op[_length / 2] * j);
                 }
             }
         }
-    }
-
-    /**
-     * [Unfinished] 辅助函数
-     * @param map
-     * @param mode
-     * @param depth
-     * @param curSize
-     * @param targetSize
-     * @param targetIndex
-     * @param value
-     */
-    void pRho(MatrixMapper &map,
-              const std::vector<int> &mode,
-              int depth,
-              int curSize,
-              int targetSize,
-              int *targetIndex,
-              ayaji::Complex value) {
-        /*
-        if(mode[depth] == 0){
-            // 不要的index
-            if(curSize == targetSize){
-                map.set(targetIndex, value);
-            } else{
-
-            }
-        }else{
-            // 要的index
-
-        }
-         */
     }
 
     /**
@@ -151,22 +120,22 @@ private:
     void subRepairTest(int depth, std::vector<int> index) {
         if (depth == size.size()) {
             int d = 1;
-            for (int i = 0; i < index.size(); ++i) {
+            for (int i : index) {
                 int j = 1;
-                for (int k = 2; k < index[i] + 1; ++k) {
+                for (int k = 2; k < i + 1; ++k) {
                     j *= k;
                 }
                 d *= j;
             }
             set(index, get(index) * ayaji::Complex(sqrt(d), 0), false);
-            bool trace = true;
+            bool _trace = true;
             for (int i = 0; i < index.size(); i += 2) {
                 if (index[i] != index[i + 1]) {
-                    trace = false;
+                    _trace = false;
                     break;
                 }
             }
-            if (trace) {
+            if (_trace) {
                 this->trace += get(index);
             }
         } else {
@@ -231,7 +200,6 @@ public:
         for (int i = 0; i < size.size() * 2; i += 2) {
             this->size[i] = this->size[i + 1] = size[i / 2];
         }
-        int length = 1;
         int offset = 1;
         off.resize(size.size() * 2);
         off_op.resize(size.size());
@@ -246,7 +214,6 @@ public:
             off_op[i] = offset;
             offset *= size[i];
         }
-        this->length = length;
         this->data = new ayaji::Complex[length];
         int i = 0;
         ayaji::Complex init(static_cast<double>(1.0) / offset, 0);
@@ -257,7 +224,7 @@ public:
         }
         */
 
-        data[0]=ayaji::Complex(1,0);
+        data[0] = ayaji::Complex(1, 0);
         //_init(std::vector<int>(), init);
     }
 
@@ -303,7 +270,7 @@ public:
      * @param value 将要设定的值
      */
     inline void set(const std::vector<int> &list, ayaji::Complex value) {
-        set(list, value, true);
+        set(list, std::move(value), true);
     }
 
     void set(const std::vector<int> &list, ayaji::Complex value, bool checkZero) {
@@ -335,8 +302,6 @@ public:
     void repair() {
         trace = ayaji::Complex(0, 0);
         subRepair(0, 0, 1, -1, true);
-        //subRepairTest(0, std::vector<int>());
-        // 据说这样会快
         int i;
         for (i = 0; i < length; ++i) {
             data[i] /= trace;
@@ -352,7 +317,7 @@ public:
         for (int i = 0; i < size.size(); i += 2) {
             len *= size[i];
         }
-        TensorMatrix *ret = new TensorMatrix(len);
+        auto *ret = new TensorMatrix(len);
         int *l = reinterpret_cast<int *>(malloc(sizeof(int) * size.size()));
         rho(ret, 0, l, 0, 0);
         free(l);
@@ -379,7 +344,7 @@ public:
         return ret;
     }
 
-    inline size_t getLength() {
+    inline size_t getLength() const {
         return length;
     }
 
@@ -401,14 +366,14 @@ public:
  * @param index 坐标列表
  * @return
  */
-inline ayaji::Complex get(const int *index) {
-    size_t offset = 0;
-    for (int i = 0; i < off.size(); i += 2) {
-        // 此处不考虑越界情况
-        offset += off[i] * index[i] + off[i + 1] * index[i + 1];
+    inline ayaji::Complex get(const int *index) {
+        size_t offset = 0;
+        for (int i = 0; i < off.size(); i += 2) {
+            // 此处不考虑越界情况
+            offset += off[i] * index[i] + off[i + 1] * index[i + 1];
+        }
+        return get(offset);
     }
-    return get(offset);
-}
 };
 
 #endif  // INCLUDE_MATRIXMAPPER_H_
