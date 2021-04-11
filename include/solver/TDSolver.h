@@ -72,27 +72,17 @@ private:
                 std::vector<int> nextNeighbour = getNeighbour(root, nextNeighbourIndex);
                 auto div = epDeriver.calMasterEP(root);
                 if(div.isZero()){
-#pragma omp critical
-                    {
-                        /*
-                        printf("Div by zero detected: ");
-                        for (auto i : root) {
-                            printf("%d ", i);
-                        }
-                        printf("\n");
-                        */
-                        root = nextNeighbour;
-                        rootValue = dst[_i]->get(nextNeighbour);
-                    }
+                    root = nextNeighbour;
+                    rootValue = dst[_i]->get(nextNeighbour);
                     continue;
                 }
                 ayaji::Complex result = rootValue + alpha * (gamma * neighbourCnt * epDeriver.calNeighbourEP(nextNeighbour, nextNeighbourIndex) / div * dst[_i]->get(nextNeighbour) - dst[_i]->get(root));
-                if (result.getReal() != result.getReal()){
-                    //throw "Nan detected!\n";
-                }
-                dst[_i]->set(root, result);
                 ayaji::Complex resultCj = result.conj();
-                dst[_i]->set(getOpposite(root), resultCj);
+#pragma omp critical
+                {
+                    dst[_i]->set(root, result);
+                    dst[_i]->set(getOpposite(root), resultCj);
+                }
                 root = nextNeighbour;
                 rootValue = result;
             } while (inbound(root));

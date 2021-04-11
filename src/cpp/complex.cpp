@@ -229,13 +229,9 @@ Complex::Complex(Complex&& o) noexcept {
     this->image = o.image;
 }
 
-Complex::~Complex() {}
+Complex::~Complex() = default;
 
-Complex& Complex::operator=(const Complex& o) {
-    this->real = o.real;
-    this->image = o.image;
-    return *this;
-}
+Complex& Complex::operator=(const Complex& o) = default;
 
 Complex Complex::operator+(const Complex& o) const {
     return Complex(this->real + o.real, this->image + o.image);
@@ -349,13 +345,13 @@ Complex Complex::operator--(int) {
 }
 
 
-Complex Complex::conj() {
+Complex Complex::conj() const {
     Complex tmp = Complex(this->real, -1 * this->image);
     return tmp;
 }
 
 bool Complex::isZero() const {
-    return (abs(this->real) < episilon && abs(this->image) < episilon);
+    return (std::abs(this->real) < episilon && std::abs(this->image) < episilon);
 }
 
 double Complex::getReal() const {
@@ -366,32 +362,32 @@ double Complex::getImage() const {
     return this->image;
 }
 
-void Complex::setReal(double real) {
-    this->real = real;
+void Complex::setReal(double _real) {
+    this->real = _real;
 }
 
-void Complex::setImage(double image) {
-    this->image = image;
+void Complex::setImage(double _image) {
+    this->image = _image;
 }
 
-void Complex::set(double real, double image) {
-    this->real = real;
-    this->image = image;
+void Complex::set(double _real, double _image) {
+    this->real = _real;
+    this->image = _image;
 }
 
 Complex operator+(const double lhs, const Complex &rhs) {
-    return Complex(lhs + rhs.getReal(), lhs + rhs.getImage());
-};
+    return Complex(lhs + rhs.getReal(), rhs.getImage());
+}
 Complex operator-(const double lhs, const Complex &rhs) {
-    return Complex(lhs - rhs.getReal(), lhs - rhs.getImage());
-};
+    return Complex(lhs - rhs.getReal(),  - rhs.getImage());
+}
 Complex operator*(const double lhs, const Complex &rhs) {
-    return Complex((lhs * rhs.getReal()), (lhs * rhs.getImage()));
-};
+    return Complex((lhs * rhs.getReal()), (rhs.getImage()));
+}
 Complex operator/(const double lhs, const Complex &rhs) {
     double temp = lhs / (rhs.getReal() * rhs.getReal() + rhs.getImage() * rhs.getImage());
     return Complex(rhs.getReal() * temp, - rhs.getImage() * temp);
-};
+}
 
 #endif  // !HIGH_PRECISION
 
