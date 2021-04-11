@@ -382,7 +382,7 @@ Complex operator-(const double lhs, const Complex &rhs) {
     return Complex(lhs - rhs.getReal(),  - rhs.getImage());
 }
 Complex operator*(const double lhs, const Complex &rhs) {
-    return Complex((lhs * rhs.getReal()), (rhs.getImage()));
+    return Complex((lhs * rhs.getReal()), (lhs * rhs.getImage()));
 }
 Complex operator/(const double lhs, const Complex &rhs) {
     double temp = lhs / (rhs.getReal() * rhs.getReal() + rhs.getImage() * rhs.getImage());
