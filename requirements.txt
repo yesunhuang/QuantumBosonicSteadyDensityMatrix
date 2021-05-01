@@ -3,3 +3,4 @@ attrs
 scikit-build
 ninja
 wheel
+matplotlib

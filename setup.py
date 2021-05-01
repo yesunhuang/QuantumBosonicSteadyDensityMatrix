@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 from skbuild import setup
 from setuptools import find_packages
